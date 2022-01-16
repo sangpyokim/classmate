@@ -1,7 +1,8 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
-
+import {BiSearch} from 'react-icons/bi'
+ 
 const Logoo = "🇰🇷"
 
 
@@ -137,6 +138,13 @@ const FormInput = styled.input`
     color: ${props => props.theme.color.second};
     width: 100%;
 `
+const FormInputIcon = styled(BiSearch)`
+    position: absolute;
+    top: 55px;
+    right: 10px;
+    font-size: 22px;
+    color: ${props => props.theme.color.third};
+`
 //학교리스트
 const Lists = styled.div`
     position: relative;
@@ -209,6 +217,13 @@ const Footer = styled.div`
 const MContainer = styled.div`
     width: 100%;
     height: 100vh;
+    overflow-y: auto;
+        //스크롤바 삭제
+        -ms-overflow-style: none; /* IE and Edge */
+        scrollbar-width: none; /* Firefox */
+    &::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Opera*/
+    }
 `
 const MLogin = styled.div`
     position: fixed;
@@ -219,7 +234,9 @@ const MLogin = styled.div`
     width: 100%;
     height: 255px;
     padding: 30px 15px;
-    z-index: 9;
+    z-index: 11;
+    border-bottom: 1px solid ${props => props.theme.line};
+    background-color: white;
 `
 const MLogo = styled(Link)`
     font-size: 60px;
@@ -245,7 +262,7 @@ const MSignUpButton = styled(Link)`
     width: 100%;
     margin-bottom: 10px;
 `
-const MFindButton = styled(Link)`
+const MFindButton = styled.div`
     display: flex;
     align-items: center;
     justify-content: flex-end;
@@ -253,7 +270,11 @@ const MFindButton = styled(Link)`
     height: 15px;
     font-size: 12px;
 `
-const MLists = styled.div``
+const MLists = styled.div`
+    position: relative;
+    top: 255px;
+    z-index: 9;
+`
 const MFooter = styled.div``
 
 function Main() {
@@ -281,9 +302,131 @@ function Main() {
                     </MLogo>
                     <MSignInButton to="#">로그인</MSignInButton>
                     <MSignUpButton to="#">회원가입</MSignUpButton>
-                    <MFindButton to="#">아이디/비밀번호 찾기</MFindButton>
+                    <MFindButton>
+                        <Link to="#">아이디/비밀번호 찾기</Link>
+                    </MFindButton>
                 </MLogin>
-                <MLists></MLists>
+                <MLists>
+                    <List to='/'>
+                        <div>1</div>
+                        <div>가입한사람수</div>
+                    </List>
+                    <List to='/'>
+                        <div>대학이름</div>
+                        <div>가입한사람수</div>
+                    </List>
+                    <List to='/'>
+                        <div>대학이름</div>
+                        <div>가입한사람수</div>
+                    </List>
+                    <List to='/'>
+                        <div>대학이름</div>
+                        <div>가입한사람수</div>
+                    </List>
+                    <List to='/'>
+                        <div>대학이름</div>
+                        <div>가입한사람수</div>
+                    </List>
+                    <List to='/'>
+                        <div>대학이름</div>
+                        <div>가입한사람수</div>
+                    </List>
+                    <List to='/'>
+                        <div>대학이름</div>
+                        <div>가입한사람수</div>
+                    </List>
+                    <List to='/'>
+                        <div>대학이름</div>
+                        <div>가입한사람수</div>
+                    </List>
+                    <List to='/'>
+                        <div>대학이름</div>
+                        <div>가입한사람수</div>
+                    </List>
+                    <List to='/'>
+                        <div>대학이름</div>
+                        <div>가입한사람수</div>
+                    </List>
+                    <List to='/'>
+                        <div>대학이름</div>
+                        <div>가입한사람수</div>
+                    </List>
+                    <List to='/'>
+                        <div>대학이름</div>
+                        <div>가입한사람수</div>
+                    </List>
+                    <List to='/'>
+                        <div>대학이름</div>
+                        <div>가입한사람수</div>
+                    </List>
+                    <List to='/'>
+                        <div>대학이름</div>
+                        <div>가입한사람수</div>
+                    </List>
+                    <List to='/'>
+                        <div>대학이름</div>
+                        <div>가입한사람수</div>
+                    </List>
+                    <List to='/'>
+                        <div>대학이름</div>
+                        <div>가입한사람수</div>
+                    </List>
+                    <List to='/'>
+                        <div>대학이름</div>
+                        <div>가입한사람수</div>
+                    </List>
+                    <List to='/'>
+                        <div>대학이름</div>
+                        <div>가입한사람수</div>
+                    </List>
+                    <List to='/'>
+                        <div>대학이름</div>
+                        <div>가입한사람수</div>
+                    </List>
+                    <List to='/'>
+                        <div>대학이름</div>
+                        <div>가입한사람수</div>
+                    </List>
+                    <List to='/'>
+                        <div>대학이름</div>
+                        <div>가입한사람수</div>
+                    </List>
+                    <List to='/'>
+                        <div>대학이름</div>
+                        <div>가입한사람수</div>
+                    </List>
+                    <List to='/'>
+                        <div>대학이름</div>
+                        <div>가입한사람수</div>
+                    </List>
+                    <List to='/'>
+                        <div>대학이름</div>
+                        <div>가입한사람수</div>
+                    </List>
+                    <List to='/'>
+                        <div>대학이름</div>
+                        <div>가입한사람수</div>
+                    </List>
+                    <List to='/'>
+                        <div>대학이름</div>
+                        <div>가입한사람수</div>
+                    </List>
+                    <List to='/'>
+                        <div>대학이름</div>
+                        <div>가입한사람수</div>
+                    </List>
+                    <List to='/'>
+                        <div>대학이름</div>
+                        <div>가입한사람수</div>
+                    </List>
+                    <List to='/'>
+                        <div>대학이름</div>
+                        <div>가입한사람수</div>
+                    </List>
+
+
+
+                </MLists>
                 <MFooter></MFooter>
             </MContainer>
         )
@@ -321,7 +464,9 @@ function Main() {
 
                 <Form autoComplete='off' >
                     <FormLabel>나중에 여기에 뭘 넣어야함? 일단 계속함</FormLabel>
-                    <FormInput type="text" name="name" placeholder="찾으시는 캠퍼스를 검색하세요." autocomplete="off"></FormInput>
+                    <FormInput type="text" name="name" placeholder="찾으시는 캠퍼스를 검색하세요." autocomplete="off">
+                    </FormInput>
+                    <FormInputIcon/>
                 </Form> 
 
                 <Lists>
