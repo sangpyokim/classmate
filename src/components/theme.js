@@ -2,6 +2,7 @@ const theme = {
     desktop: `(min-width: 1281px)`,
     tablet: `(min-width: 991px)`,
     mobile: `(max-width: 990px)`,
+    mobileM: `(min-width: 640px)`,
     line: "#d6d6d6",
 
 //폰트 컬러

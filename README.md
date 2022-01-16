@@ -9,5 +9,5 @@ ui는 에브리타임을 참고하여 만들었습니다.
 
 ## 라이브러리
 
-`react-router-dom`, `styled-conponents`, 
+`react-router-dom`, `styled-conponents`, `react-icon`
 
