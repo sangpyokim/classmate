@@ -297,13 +297,13 @@ function Main() {
         return(
             <MContainer  >
                 <MLogin>
-                    <MLogo to='#' onClick={() => setMobileToggle(false)} >
+                    <MLogo to='/' onClick={() => setMobileToggle(false)} >
                         <div>{Logoo}</div>
                     </MLogo>
-                    <MSignInButton to="#">로그인</MSignInButton>
-                    <MSignUpButton to="#">회원가입</MSignUpButton>
+                    <MSignInButton to="signin">로그인</MSignInButton>
+                    <MSignUpButton to="signup">회원가입</MSignUpButton>
                     <MFindButton>
-                        <Link to="#">아이디/비밀번호 찾기</Link>
+                        <Link to="forgot">아이디/비밀번호 찾기</Link>
                     </MFindButton>
                 </MLogin>
                 <MLists>
@@ -449,15 +449,15 @@ function Main() {
                         <Logo>{Logoo}</Logo>
                     </Link>
 
-                    <Link to="/" >
+                    <Link to="/signin" >
                         <SignIn>로그인</SignIn>
                     </Link>
 
-                    <Link to="/" >
+                    <Link to="/signup" >
                         <SignUp>classmate 회원가입</SignUp>
                     </Link>
 
-                    <Link to="/">
+                    <Link to="/forgot">
                         <FindPassword>아이디/비밀번호 찾기</FindPassword>
                     </Link>
                 </Header>
