@@ -140,7 +140,7 @@ function SignIn() {
                 </LabelContainer>
 
                 <Regi>
-                    <span>에브리타임에 처음이신가요?</span>
+                    <span>Classmate에 처음이신가요?</span>
                     <Link to="/register">회원가입</Link>
                 </Regi>
             </Form>

@@ -91,7 +91,7 @@ function SignUp() {
                     <div ><label>입학년도</label></div>
 
                     <select name="enter_year">
-                        <option disabled="" select="" >연도 선택 (학번)</option>
+                        <option disabled select="" >연도 선택 (학번)</option>
                         <option value="2022">2022학번</option>
                         <option value="2021">2021학번</option>
                         <option value="2020">2020학번</option>
