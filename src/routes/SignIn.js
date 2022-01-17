@@ -1,6 +1,8 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import { signInWithEmailAndPassword } from 'firebase/auth'
+import React, { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
+import { Auth } from '../firebase'
 
 
 //로고
@@ -113,8 +115,28 @@ const Footer = styled.div`
         color: ${props => props.theme.color.second};
     }
 `
+const Error = styled.div`
+    margin: 10px 0 20px 0;
+    display: flex;
+    align-items:center;
+    justify-content:center;
+    color: blue;
+`
+
 
 function SignIn() {
+    const [ email, setEmail ] = useState("")
+    const [ password, setPassword ] = useState("")
+    const [ error, setError ] = useState("");
+
+    let navigate = useNavigate();
+
+    const onSubminSignIn = (e) => {
+        e.preventDefault()
+        signInWithEmailAndPassword(Auth, email, password).then(() => navigate("/")).catch(e => setError(e.message))
+
+    }
+
     return (
         <Container>
             <Logo>
@@ -125,10 +147,11 @@ function SignIn() {
                     지금<div>Classmate</div>를 시작하세요!
                 </div>
             </Logo>
-            <Form>
-                <Input placeholder='아이디' type={'text'} maxLength={20} />
-                <Input placeholder='비밀번호' type={'password'} maxLength={20} />
+            <Form onSubmit={e => onSubminSignIn(e)} >
+                <Input placeholder='아이디' type={'text'} maxLength={20} value={email} onChange={e => setEmail(e.target.value)}  />
+                <Input placeholder='비밀번호' type={'password'} maxLength={20} value={password} onChange={e => setPassword(e.target.value)}  />
                 <Submit type={'submit'} value={"로그인"} />
+                <Error>{error.split('Firebase:')}</Error>
                 <LabelContainer>
                     <Label>
                         <input type="checkbox" value="1" />
