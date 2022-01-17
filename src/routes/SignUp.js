@@ -1,5 +1,7 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
+import { UnivList } from '../components/UnivList'
 
 const Container = styled.div`
     display: flex;
@@ -79,10 +81,36 @@ const NextButton = styled.input`
     font-weight: 700;
 `
 
+// 학교 전체 리스트를 배열로 가져오기
+
+
 function SignUp() {
+    const [ studentID, setStudentID ] = useState("") //not null
+    const [ univ, setUniv ] = useState("");
+    const [ selectedUniv, setSelectedUniv ] = useState("") // not null
+
+    let navigate = useNavigate();
+
+
+    const setState = (list) => {
+        setSelectedUniv(list)
+        setUniv(list)
+    }
+
+    const onSubmitVerification = (e) => {
+        e.preventDefault()
+        studentID.length > 0 
+        ? selectedUniv.length > 0 
+            ? navigate('/signup/register', { studentID, selectedUniv }) 
+            : alert("대학을 골라주세요!")
+        : alert("학번을 골라주세요!")
+
+          
+    }
+
     return (
         <Container>
-            <Form id="container">
+            <Form onSubmit={e => onSubmitVerification(e)}  >
                 <H2>Classmate 회원가입</H2>
                 <Des >Classmate 계정으로 <strong>Classmate</strong>의<br />다양한 대학생 서비스를 모두 이용하실 수 있습니다.</Des>
                 <H2>학교 선택</H2>
@@ -90,8 +118,8 @@ function SignUp() {
                 <InputContainer>
                     <div ><label>입학년도</label></div>
 
-                    <select name="enter_year">
-                        <option disabled select="" >연도 선택 (학번)</option>
+                    <select  defaultValue="" onChange={e=> setStudentID(e.target.value)} >
+                        <option disabled select="" value={""} >연도 선택 (학번)</option>
                         <option value="2022">2022학번</option>
                         <option value="2021">2021학번</option>
                         <option value="2020">2020학번</option>
@@ -114,10 +142,20 @@ function SignUp() {
                     <div >
                         <label>학교</label>
                     </div>
-                    <input type="text"  maxLength="20" placeholder="학교 이름을 검색하세요." autoComplete="off" />
+                    <input type="text" maxLength="20" placeholder="학교 이름을 검색하세요." autoComplete="off" value={univ} onChange={(e) => setUniv(e.target.value)} />
                 </InputContainer>
                 <Lists>
-                    <div>학교리스트</div>
+                    <ol>
+                        { univ && UnivList.map( (list, index) => (
+                            list.indexOf(univ) > -1
+                              ? 
+                                <li key={index} onClick={() => setState(list)} >
+                                    {list}
+                                </li>
+                              :
+                                null
+                        ))}
+                    </ol>
                 </Lists>
                 <NextButton type="submit" value="다음" />
             </Form>

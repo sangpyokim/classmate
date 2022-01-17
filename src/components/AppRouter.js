@@ -13,6 +13,7 @@ import SignUp from '../routes/SignUp'
 import Forgot from '../routes/Forgot'
 // home_pages
 import Home from '../routes/Home'
+import Register from '../routes/Register'
 
 
 
@@ -62,6 +63,7 @@ function AppRouter() {
                 <Route path="/" element={<Main />} />
                 <Route path='/signin' element={<SignIn />} />
                 <Route path="/signup" element={<SignUp />} />
+                <Route path="/signup/register" element={<Register />} />
                 <Route path="/forgot" element={<Forgot />} />
             </Routes>
             
