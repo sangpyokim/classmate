@@ -164,7 +164,7 @@ function SignIn() {
 
                 <Regi>
                     <span>Classmate에 처음이신가요?</span>
-                    <Link to="/register">회원가입</Link>
+                    <Link to="/signup">회원가입</Link>
                 </Regi>
             </Form>
             <Footer>

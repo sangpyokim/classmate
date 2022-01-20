@@ -2,7 +2,10 @@ import React, { useEffect, useLayoutEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import {BiSearch} from 'react-icons/bi'
- 
+import { useSelector } from 'react-redux'
+import { setUser } from '../redux/features/user/User'
+import { UnivList } from '../components/UnivList'
+import { useDispatch } from 'react-redux'
 const Logoo = "🇰🇷"
 
 
@@ -13,7 +16,6 @@ const Container = styled.div`
     @media ${props => props.theme.tablet} {
         padding-right: 301px;
     }
-    
 `
 // 모바일헤더
 const MobileHeader = styled.div`
@@ -163,6 +165,10 @@ const List = styled(Link)`
         background-color: #f2f2f2;
 
     }
+    &>div:last-child {
+        color: ${props => props.theme.color.third};
+        font-size: 12px;
+    }
 `
 //메인
 const MainSection = styled.div`
@@ -281,6 +287,8 @@ function Main() {
     const [ mobileToggle, setMobileToggle ] = useState(false);
     const [size, setSize] = useState(0);
 
+    const user = useSelector( state => state.user.value);
+    const dispatch = useDispatch();
 
     function updateSize() {
         setSize(window.innerWidth);
@@ -290,7 +298,7 @@ function Main() {
         updateSize()
     }, [])
 
-    
+
     
 
     if (size < 991 && mobileToggle ) {
@@ -307,125 +315,12 @@ function Main() {
                     </MFindButton>
                 </MLogin>
                 <MLists>
-                    <List to='/'>
-                        <div>1</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-
-
-
+                    {UnivList.map(list => (
+                        <List to="/" key={list}>
+                            <div>{list}</div>
+                            <div>가입한사람수</div>
+                        </List>
+                    ))}
                 </MLists>
                 <MFooter></MFooter>
             </MContainer>
@@ -463,113 +358,19 @@ function Main() {
                 </Header>
 
                 <Form autoComplete='off' >
-                    <FormLabel>나중에 여기에 뭘 넣어야함? 일단 계속함</FormLabel>
+                    <FormLabel>우리 학교 커뮤니티 둘러보기</FormLabel>
                     <FormInput type="text" name="name" placeholder="찾으시는 캠퍼스를 검색하세요." autocomplete="off">
                     </FormInput>
                     <FormInputIcon/>
                 </Form> 
 
                 <Lists>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
-                    <List to='/'>
-                        <div>대학이름</div>
-                        <div>가입한사람수</div>
-                    </List>
+                    {UnivList.map(list => (
+                        <List to="/" key={list}>
+                            <div>{list}</div>
+                            <div>가입한사람수</div>
+                        </List>
+                    ))}
                 </Lists>
             </Aside>
 

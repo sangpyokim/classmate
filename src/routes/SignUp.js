@@ -7,6 +7,12 @@ const Container = styled.div`
     display: flex;
     justify-content:center;
     padding: 25px 0;
+    @media (max-width: 480px) {
+        padding: 0px;
+        &>form {
+            border: none;
+        }
+    }
 `
 const Form = styled.form`
     width:480px;
@@ -81,7 +87,6 @@ const NextButton = styled.input`
     font-weight: 700;
 `
 
-// 학교 전체 리스트를 배열로 가져오기
 
 
 function SignUp() {
@@ -101,7 +106,7 @@ function SignUp() {
         e.preventDefault()
         studentID.length > 0 
         ? selectedUniv.length > 0 
-            ? navigate('/signup/register', { studentID, selectedUniv }) 
+            ? navigate('/signup/register', {state: { studentID, selectedUniv }}) 
             : alert("대학을 골라주세요!")
         : alert("학번을 골라주세요!")
 
