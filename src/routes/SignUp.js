@@ -13,6 +13,12 @@ const Container = styled.div`
             border: none;
         }
     }
+
+    -ms-user-select: none; 
+        -moz-user-select: -moz-none; 
+        -webkit-user-select: none; 
+        -khtml-user-select: none; 
+        user-select:none;
 `
 const Form = styled.form`
     width:480px;

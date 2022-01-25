@@ -9,6 +9,7 @@ function Register() {
     const navigate = useNavigate()
 
     // 회원가입하면 userID를 리덕스에서 꺼내와서 컬렉션의 문서의 아이디로 지정하고 회원가입 정보들을 데이터베이스에 저장함.
+    // 굳이 그럴필요없음 
     const userID = "Lhb9ER2zehTydGcOI6cJAVpE4dq2"
     const onClicks = async() => {
             await setDoc(doc(FireStore, "Users_Info", userID), {

@@ -6,7 +6,8 @@ import { useSelector } from 'react-redux'
 import { setUser } from '../redux/features/user/User'
 import { UnivList } from '../components/UnivList'
 import { useDispatch } from 'react-redux'
-const Logoo = "🇰🇷"
+import theme from '../components/theme'
+
 
 
 const Container = styled.div`
@@ -306,7 +307,7 @@ function Main() {
             <MContainer  >
                 <MLogin>
                     <MLogo to='/' onClick={() => setMobileToggle(false)} >
-                        <div>{Logoo}</div>
+                        <div>{theme.mainLogo}</div>
                     </MLogo>
                     <MSignInButton to="signin">로그인</MSignInButton>
                     <MSignUpButton to="signup">회원가입</MSignUpButton>
@@ -330,7 +331,7 @@ function Main() {
     return (
         <Container>
             <MobileHeader>
-                <MobileLogo>{Logoo}</MobileLogo>
+                <MobileLogo>{theme.mainLogo}</MobileLogo>
                 <Link to="#" onClick={() => setMobileToggle(true)} >
                     <MobileButton>
                         모바일 웹 이용하기
@@ -341,7 +342,7 @@ function Main() {
             <Aside>
                 <Header>
                     <Link to="/" >
-                        <Logo>{Logoo}</Logo>
+                        <Logo>{theme.mainLogo}</Logo>
                     </Link>
 
                     <Link to="/signin" >
@@ -359,7 +360,7 @@ function Main() {
 
                 <Form autoComplete='off' >
                     <FormLabel>우리 학교 커뮤니티 둘러보기</FormLabel>
-                    <FormInput type="text" name="name" placeholder="찾으시는 캠퍼스를 검색하세요." autocomplete="off">
+                    <FormInput type="text" placeholder="찾으시는 캠퍼스를 검색하세요." autocomplete="off">
                     </FormInput>
                     <FormInputIcon/>
                 </Form> 

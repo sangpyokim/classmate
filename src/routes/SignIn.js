@@ -3,10 +3,10 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 import { Auth } from '../firebase'
+import theme from '../components/theme'  
 
 
 //로고
-const Logoo = "🇰🇷"
 
 //바디
 const Container = styled.div`
@@ -141,7 +141,7 @@ function SignIn() {
         <Container>
             <Logo>
                 <Link to={"/"} >
-                    {Logoo}
+                    {theme.mainLogo}
                 </Link>
                 <div>
                     지금<div>Classmate</div>를 시작하세요!

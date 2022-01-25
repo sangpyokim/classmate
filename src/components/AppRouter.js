@@ -2,10 +2,12 @@ import React, { useEffect, useState } from 'react'
 import { Routes, Route, Navigate, } from 'react-router-dom'
 import { onAuthStateChanged } from 'firebase/auth'
 import { Auth } from '../firebase'
+import { useDispatch, useSelector } from 'react-redux'
+import { setUser } from '../redux/features/user/User'
 
-
+//components
 import Loader from './Loader'
-
+import Header from './Header'
 // main_pages
 import Main from '../routes/Main'
 import SignIn from '../routes/SignIn'
@@ -14,8 +16,7 @@ import Forgot from '../routes/Forgot'
 // home_pages
 import Home from '../routes/Home'
 import Register from '../routes/Register'
-import { useDispatch, useSelector } from 'react-redux'
-import { setUser } from '../redux/features/user/User'
+import Search from '../routes/Search'
 
 
 
@@ -56,10 +57,14 @@ function AppRouter() {
           :
             isloggedIn 
                 ?
+                <>
+                <Header />
                 <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="*" element={<Home />} />
+                    <Route path="/" element={<Home />} />
+                    <Route path="/search" element={<Search />} />
+                    <Route path="*" element={<Navigate to={"/"} />} />
                 </Routes>
+                </>
                 :
                 
                 <Routes>

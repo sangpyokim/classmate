@@ -5,11 +5,6 @@ const GlobalStyles = createGlobalStyle`
     ${reset}
     * {
         box-sizing: border-box;
-        -ms-user-select: none; 
-        -moz-user-select: -moz-none; 
-        -webkit-user-select: none; 
-        -khtml-user-select: none; 
-        user-select:none;
         &:focus {
             outline: none;
         }
