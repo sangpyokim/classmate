@@ -38,10 +38,10 @@ function SubMenu() {
       <div>
         <Container>
           <div>
-              <BoardLink to='/' >
+              <BoardLink to='/free-board' >
                 자유게시판
               </BoardLink >
-              <BoardLink to='/' >
+              <BoardLink to='/secret-board' >
                 비밀게시판
               </BoardLink >
           </div>

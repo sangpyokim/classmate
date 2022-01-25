@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import theme from './theme';
 
@@ -17,7 +17,7 @@ const Container = styled.nav`
     box-shadow: 0 0.5px 1px rgba(25, 25, 25, 0.2);
     padding: 0 16px;
     background-color: white;
-
+    z-index: 10;
     &>div {
         display: flex;
         align-items: center;
@@ -54,17 +54,30 @@ const Logo = styled.div`
 const Menu = styled.ul`
     display: flex;
 
-    &>li {
-        margin-right: 22px;
+
+
+`
+const Li = styled.li`
+    margin-right: 22px;
         font-size: 16px;
-        font-weight: 600;
-        color: ${props => props.theme.color.first}
+        font-weight: 700;
+        color: ${props => props.pathname === props.id ? props.theme.color.main : props.theme.color.first };
+        display: flex;
+        align-items: center;
+        height:78px;
+        box-sizing: content-box;
+        border-bottom: 4px solid ${props => props.pathname === props.id ? props.theme.color.main : "tranparent" };
+    &:first-child {
+        border-bottom: 4px solid ${props => props.pathname.indexOf("board") > 0 ? props.theme.color.main : "tranparent" };
+        color: ${props => props.pathname.indexOf("board") > 0 ? props.theme.color.main : "tranparent" };
     }
-    &>li:last-child {
+    &:hover {
+        color: ${props => props.theme.color.main};
+    }
+    &:last-child {
         margin-right: 0px;
     }
 `
-
 
 const Account = styled.div`
     width: 120px;
@@ -77,6 +90,9 @@ const Account = styled.div`
 `
 
 function Header() {
+    const location = useLocation()
+
+
   return (
     <Container>
         <div>
@@ -96,14 +112,14 @@ function Header() {
 
 
 
-            <Menu>
-                <li ><Link to="/">게시판</Link></li>
-                <li><Link to="#">시간표</Link></li>
-                <li><Link to="#">강의평가</Link></li>
-                <li><Link to="#">학점계산기</Link></li>
-                <li><Link to="#">친구</Link></li>
-                <li><Link to="#">책방</Link></li>
-                <li><Link to="#">캠퍼스픽</Link></li>
+            <Menu  >
+                <Li id='/' pathname={location.pathname} ><Link to="/">게시판</Link></Li>
+                <Li id='/time-table' pathname={location.pathname} ><Link to="time-table">시간표</Link></Li>
+                <Li id='#' pathname={location.pathname}><Link to="#">강의평가</Link></Li>
+                <Li id='#' pathname={location.pathname}><Link to="#">학점계산기</Link></Li>
+                <Li id='#' pathname={location.pathname}><Link to="#">친구</Link></Li>
+                <Li id="#" pathname={"1"} ><Link to="#">책방</Link></Li>
+                <Li id='#' pathname={"2"} ><Link to="#">캠퍼스픽</Link></Li>
             </Menu>
 
             <Account >

@@ -17,7 +17,10 @@ import Forgot from '../routes/Forgot'
 import Home from '../routes/Home'
 import Register from '../routes/Register'
 import Search from '../routes/Search'
-
+import FreeBoard from '../routes/FreeBoard'
+import SecretBoard from '../routes/SecretBoard'
+//timetale
+import TimeTable from '../routes/TimeTable'
 
 
 
@@ -33,17 +36,12 @@ function AppRouter() {
         onAuthStateChanged(Auth, (user) => {
             if (user) {
                 dispatch(setUser(user.uid))
-
                 setIsloggedIn(true)
-                
                 setLoading(false)
               } else {
                 setLoading(true)
-
                 setIsloggedIn(false)
-
                 setLoading(false)
-
               }
         })
     }, [])
@@ -62,6 +60,9 @@ function AppRouter() {
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/search" element={<Search />} />
+                    <Route path="/free-board" element={<FreeBoard />} />
+                    <Route path="secret-board" element={<SecretBoard />} />
+                    <Route path='time-table' element={<TimeTable />} />
                     <Route path="*" element={<Navigate to={"/"} />} />
                 </Routes>
                 </>

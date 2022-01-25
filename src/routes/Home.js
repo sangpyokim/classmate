@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { signOut, updateCurrentUser } from 'firebase/auth'
-import { Auth } from '../firebase'
+import { Auth, FireStore } from '../firebase'
 import { useSelector } from 'react-redux'
 import styled from 'styled-components'
 import SubMenu from '../components/SubMenu'
-import SearchInput from '../components/SearchInput'
-import {BiSearch} from 'react-icons/bi'
+import { doc, getDoc } from 'firebase/firestore'
+import Loader from '../components/Loader'
+import RightAsides from '../components/RightAside'
+import { useNavigate } from 'react-router-dom'
 
 
 const Ppp = styled.div`
@@ -172,65 +174,45 @@ const MainCard = styled.div`
 
 `
 
-// 검색, 요약
-const RightAside = styled.div`
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    width: 325px;
-`
-const InputContainer = styled.form`
-    width: 100%;
-    height: 40px;
-    margin-bottom: 4px;
-`
-const FormInputIcon = styled(BiSearch)`
-    position:relative;
-    left: 295px;
-    bottom: 30px;
-    font-size: 22px;
-    color: ${props => props.theme.color.third};
-`
-const RightCard = styled.div`
-    border: 1px solid ${props => props.theme.line};
-    width: 100%;
-    font-weight: 500;
-    border-bottom: none;
-    background-color: whitesmoke;
-    margin-bottom: 4px;
-    &>div {
-        border-bottom: 1px solid ${props => props.theme.line};
-        display: flex;
-        align-items: center;
-        padding-left: 8px;
-        min-height: 40px;
-    }
-    &>div:hover {
-        background-color: white;
-    }
-    &>div:first-child {
-        color: ${props => props.theme.color.blue};
-        height: 40px;
-        width: 100%;
-        font-weight: 700;
-
-
-    }
-    &>div:first-child:hover {
-        background-color: whitesmoke;
-    }
-`
 
 function Home() {
-    const [ data, setData ] = useState("")
+    const [ userdata, setUserData ] = useState("")
+    const [ loading, setLoading ] = useState(true);
+
     const user = useSelector( state => state.user.value)
 
+    let navigate = useNavigate()
+
+    const getUserInfo = async () => {
+        const docRef = doc(FireStore, "Users_Info", user);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            setUserData(docSnap.data());
+            setLoading(false);
+          } else {
+            // doc.data() will be undefined in this case
+            alert("잘못된 접근!");
+          }
+
+    }
+
     useEffect(() => {
+            getUserInfo()
 
     }, [])
 
+    const logOut = () => {
+        if(window.confirm("로그아웃 하시겠습니까?")){
+            signOut(Auth)
+        }
+    }
+
+
     return (
-        <Container>
+        <>
+        {loading 
+        ? <Loader /> 
+        :<Container>
             <SubMenuContainer>
                 <SubMenu />
             </SubMenuContainer>
@@ -243,19 +225,19 @@ function Home() {
                                 ♥
                             </Picture>
                             <Nickname>
-                                닉네임
+                                {userdata.nickname}
                             </Nickname>
                             <Name>
-                                이름
+                                {userdata.name}
                             </Name>
                             <Ident>
-                                아이디
+                                {userdata.id}
                             </Ident>
                             <AvatarButton>
                                 <div>
                                     내정보
                                 </div>
-                                <div>
+                                <div onClick={() => logOut()} >
                                     로그아웃
                                 </div>
                             </AvatarButton>
@@ -270,48 +252,30 @@ function Home() {
 
                     <MainSection>
                         <MainCard>
-                            <div>자유게시판</div>
+                            <div onClick={() => navigate('/free-board')} >자유게시판</div>
                             <div>게시글1</div>
                             <div>게시글2</div>
                             <div>게시글3</div>
                             <div>게시글4</div>
                         </MainCard>
                         <MainCard>
-                            <div>비밀게시판</div>
+                            <div onClick={() => navigate('/secret-board')} >비밀게시판</div>
                             <div>게시글1</div>
                             <div>게시글2</div>
                         </MainCard>
                     </MainSection>
 
-                    <RightAside>
-                        <InputContainer>
-                            <SearchInput placeholder={"전체 게시판의 글을 검색하세요!"} />
-                            <FormInputIcon />
-                        </InputContainer>
-                        
-                        <RightCard>
-                            <div>실시간 인기 글</div>
-                            <div>실시간 인기 글1</div>
-                            <div>실시간 인기 글2</div>
-                        </RightCard>
-
-                        <RightCard>
-                            <div>HOT 게시물</div>
-                            <div>실시간 인기 글1</div>
-                            <div>실시간 인기 글2</div>
-                        </RightCard>
-
-                        <RightCard>
-                            <div>BEST 게시판</div>
-                        </RightCard>
-                    </RightAside>
-
+                    
+                    <RightAsides />
                 </Contents>
             </ContentContainer>
 
             
 
         </Container>
+        }
+        </>
+
     )
 }
 
