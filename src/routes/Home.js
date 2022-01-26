@@ -4,7 +4,7 @@ import { Auth, FireStore } from '../firebase'
 import { useSelector } from 'react-redux'
 import styled from 'styled-components'
 import SubMenu from '../components/SubMenu'
-import { doc, getDoc } from 'firebase/firestore'
+import { collection, doc, getDoc, getDocs, limit, orderBy, query } from 'firebase/firestore'
 import Loader from '../components/Loader'
 import RightAsides from '../components/RightAside'
 import { useNavigate } from 'react-router-dom'
@@ -15,7 +15,7 @@ const Ppp = styled.div`
 `
 const Container = styled.div`
     width: 100%;
-    height: 200vh;
+
 `
 const SubMenuContainer = styled.div`
     display: flex;
@@ -178,6 +178,8 @@ const MainCard = styled.div`
 function Home() {
     const [ userdata, setUserData ] = useState("")
     const [ loading, setLoading ] = useState(true);
+    const [ freeList, setFreeList ] = useState();
+
 
     const user = useSelector( state => state.user.value)
 
@@ -196,9 +198,18 @@ function Home() {
 
     }
 
-    useEffect(() => {
-            getUserInfo()
+    const getFreeBoardList = async() => {
+        const docRef = collection(FireStore, "Sunchon", 'Free_board', '1')
+        const q = query(docRef, orderBy('id', 'desc', limit(4)))
+        const docs = await getDocs(q)
+        docs.forEach( doc => {
+            console.log(doc.data())
+        })
+    }
 
+    useEffect(() => {
+        getUserInfo()
+        getFreeBoardList()
     }, [])
 
     const logOut = () => {
@@ -212,7 +223,8 @@ function Home() {
         <>
         {loading 
         ? <Loader /> 
-        :<Container>
+        :
+        <Container>
             <SubMenuContainer>
                 <SubMenu />
             </SubMenuContainer>
@@ -269,9 +281,6 @@ function Home() {
                     <RightAsides />
                 </Contents>
             </ContentContainer>
-
-            
-
         </Container>
         }
         </>

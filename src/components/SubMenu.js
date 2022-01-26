@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 
 const Container = styled.div`
@@ -23,8 +23,8 @@ const Container = styled.div`
 const BoardLink = styled(Link)`
         margin-bottom: 8px;
         font-size: 12px;
-        color: ${props => props.theme.color.third};
-        font-weight: 600;
+        color: ${props => props.pathname.split(props.id).length > 1 ? props.theme.color.main : props.theme.color.third };
+        font-weight: ${props => props.pathname.split(props.id).length > 1 ? 700 : 600 };
         &:hover {
         color: ${props => props.theme.color.main};
         font-weight: 700;
@@ -34,14 +34,17 @@ const BoardLink = styled(Link)`
 
 
 function SubMenu() {
+  let location = useLocation()
+
+
   return (
       <div>
         <Container>
           <div>
-              <BoardLink to='/free-board' >
+              <BoardLink to='/free-board' id='free-board' pathname={location.pathname} >
                 자유게시판
               </BoardLink >
-              <BoardLink to='/secret-board' >
+              <BoardLink to='/secret-board' id='secret-board' pathname={location.pathname} >
                 비밀게시판
               </BoardLink >
           </div>
