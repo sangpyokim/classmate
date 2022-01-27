@@ -50,6 +50,7 @@ const MainContentsTitle = styled.div`
     font-weight: 600;
     padding-left: 12px;
     margin-bottom: 4px;
+
 `
 const SearchInputContainer = styled.div`
     height: 48px;
@@ -128,25 +129,44 @@ const MainContents = styled(Link)`
     display: flex;
     flex-direction:column;
     justify-content: space-evenly;
+    &:hover {
+        background-color: whitesmoke;
+    }
+`
+const Article = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+    padding: 4px 2px;
+`
+
+const LeftArticle = styled.div`
+    color: ${props => props.theme.color.third};
+    font-size: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    height: 100%;
     &>div:first-child {
-        font-size: 16px;
-        font-weight: 500;
+        font-weight: 600;
+        font-size: 14px;
         color: ${props => props.theme.color.first};
     }
-    &>div:nth-child(2) {
-        font-weight: 400;
-        color: ${props => props.theme.color.third};
-    }
+`
+const ArticleBottom = styled.div`
+    display: flex;
+    font-size: 12px;
     &>div:last-child {
-        font-size: 12px;
-        font-weight: 500;
-        color: ${props => props.theme.color.third};
-        display: flex;
-        &>div:last-child {
-            margin-left: 8px;
-            color: ${props => props.theme.color.second};
-        }
+        margin-left: 6px;
+        color: ${props => props.theme.color.first};
     }
+`
+
+
+const RightArticle = styled.div`
+    display: flex;
+    align-items: flex-end;
 `
 
 const Day = ['일요일', "월요일", "화요일", "수요일", '목요일', '금요일', '토요일' ]
@@ -205,36 +225,40 @@ function FreeBoard() {
         reader.readAsDataURL(file);
      };
 
+
+
+
     // 파일 업로드
     const setStorage = async(file, id) => {
+        console.log("파일 업로드중")
         if(file == null) {
             return null
         }
         const mountainRef = ref(Storage, `Sunchon/Free_board/${id}/${file.name}`)
-        uploadBytes(mountainRef, file).then( snapshot => {
-            console.log("업로드 성공")
-            getImageUrl(file, id)
+        await uploadBytes(mountainRef, file).then( async(snapshot) => {
+            console.log("업로드 성공, 이미지 주소 불러오기")
+            await getImageUrl(file, id)
         })
     }
-    
+    // 이미지 주소 가져오기
     const getImageUrl = async(file, id) => {
         console.log("시작")
         const url = await getDownloadURL(ref( Storage, `Sunchon/Free_board/${id}/${file.name}`))
-        setImageUrl(url)
-        console.log("성공", imageUrl)
+            .then(async(res) => {
+                setDocuments(res)
+            }).then(res => console.log("이미지 주소 완료"))
+
     }
-    
-    // 문서 작성하기
-    const setDocument = async(e) => {
-        e.preventDefault()
+    // 게시글 등록하기
+    const setDocuments = async(imageUrl) => {
+
+        //작성날짜
         const dat = new Date()
         const currentDate = `${dat.getFullYear()}년 ${dat.getMonth()+1}월 ${dat.getDate()}일 ${dat.getHours()}시 ${dat.getMinutes()}분 ${dat.getSeconds()}초 ${Day[dat.getDay()]} `
         // 문서의 개수 
         const docs = await getDocs(collection(FireStore, "Sunchon", 'Free_board', '1'))
 
-        window.confirm("글을 게시하겠습니까?") 
-        && setStorage(files.detailImageFile, docs.size+1) 
-        && await setDoc(doc(FireStore, 'Sunchon', 'Free_board', '1', `${docs.size + 1}`), { 
+        await setDoc(doc(FireStore, 'Sunchon', 'Free_board', '1', `${docs.size + 1}`), { 
             id: docs.size + 1,
             user: userdata,
             title,
@@ -242,9 +266,20 @@ function FreeBoard() {
             date: currentDate,
             image: imageUrl,
             shown: true
-         }).then("작성완료!")
+         }).then(console.log("게시글 등록 완료"))
     }
+    // 문서 작성하기, 유효성 검사
+    const setDocument = async(e) => {
+        e.preventDefault()
 
+
+        
+        const docs = await getDocs(collection(FireStore, "Sunchon", 'Free_board', '1'))
+
+        window.confirm("글을 게시하겠습니까?")
+        && await setStorage(files.detailImageFile, docs.size+1)
+    }
+    // 유효성 검사 -> 이미지 업로드 -> 업로드된 이미지 주소 가져오기 -> 게시물 등록!
 
 
   return (
@@ -303,14 +338,26 @@ function FreeBoard() {
                         : article.map( article => ( article.shown ? 
                             
                             <MainContents key={article.id} to={`/free-board/${article.id}`} state={{article}} >
-                                <div>{article.title}</div>
-                                <div>{article.contents.substring(0, 50)}</div>
-                                <div>
-                                    <Timer time={article.date} />
-                                    <div>
-                                        익명
-                                    </div>
-                                </div>
+                                <Article>
+                                    <LeftArticle>
+                                        <div>{article.title}</div>
+                                        <div>{article.contents.substring(0, 50)}</div>
+
+                                        <ArticleBottom>
+                                            <Timer time={article.date} />
+                                            <div>
+                                                익명
+                                            </div>
+                                        </ArticleBottom>
+                                    </LeftArticle>
+
+                                    <RightArticle>
+                                        <div>
+                                            정보들
+                                        </div>
+                                        {article.image === "" ? null : <img src={article.image} height={'75px'} width={'75px'} loading='lazy' />}
+                                    </RightArticle>
+                                </Article>
                             </MainContents>
                             : null
                         ))
@@ -326,4 +373,4 @@ function FreeBoard() {
   )
 }
 
-export default FreeBoard;
+export default FreeBoard

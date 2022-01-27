@@ -94,14 +94,15 @@ const MainContentsFooter = styled.div`
 const MainContentsComment = styled.div`
 
 `
+const Image = styled.img`
+    margin-top: 18px;
+`
 
 
 
 function FreeBoardDetail() {
-    const location = useLocation()
+    const location = useLocation() // state 값 article
     const navigate = useNavigate()
-
-    console.log(location)
     
     const [ article, setArticle ] = useState(location.state == null ? null : location.state.article)
     const [ loading, setLoading ] = useState(true)
@@ -153,6 +154,7 @@ function FreeBoardDetail() {
                                 </MainContentsTitle>
                                 <MainContentsContetns>
                                     {article && article.contents}
+                                    <Image src={article.image} width={'100%'} />
                                 </MainContentsContetns>
                             </MainContents>
 

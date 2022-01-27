@@ -274,7 +274,6 @@ function Home() {
                             {
                                 freeList && freeList.map(article => (
                             <div key={article.id} onClick={() => navigate(`/free-board/${article.id}`, {state: {article}})} >
-                                    {console.log(article)}
                                     <div>{article.title}</div>
                                     <Timer time={article.date} />
                             </div>
@@ -283,7 +282,7 @@ function Home() {
                         </MainCard>
                         <MainCard>
                             <div onClick={() => navigate('/secret-board')} >비밀게시판</div>
-                            <div>게시글1</div>
+                            <div>댓글 구현할 때 만들게용!</div>
                             <div>게시글2</div>
                         </MainCard>
                     </MainSection>
