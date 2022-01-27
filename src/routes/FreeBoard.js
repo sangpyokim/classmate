@@ -234,7 +234,7 @@ function FreeBoard() {
         if(file == null) {
             return null
         }
-        const mountainRef = ref(Storage, `Sunchon/Free_board/${id}/${file.name}`)
+        const mountainRef = ref(Storage, `Sunchon/Free_board/${id}/${user}-${id}`)
         await uploadBytes(mountainRef, file).then( async(snapshot) => {
             console.log("업로드 성공, 이미지 주소 불러오기")
             await getImageUrl(file, id)
@@ -243,11 +243,10 @@ function FreeBoard() {
     // 이미지 주소 가져오기
     const getImageUrl = async(file, id) => {
         console.log("시작")
-        const url = await getDownloadURL(ref( Storage, `Sunchon/Free_board/${id}/${file.name}`))
+        const url = await getDownloadURL(ref( Storage, `Sunchon/Free_board/${id}/${user}-${id}`))
             .then(async(res) => {
                 setDocuments(res)
             }).then(res => console.log("이미지 주소 완료"))
-
     }
     // 게시글 등록하기
     const setDocuments = async(imageUrl) => {
@@ -272,8 +271,6 @@ function FreeBoard() {
     const setDocument = async(e) => {
         e.preventDefault()
 
-
-        
         const docs = await getDocs(collection(FireStore, "Sunchon", 'Free_board', '1'))
 
         window.confirm("글을 게시하겠습니까?")
