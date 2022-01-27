@@ -101,6 +101,7 @@ function FreeBoardDetail() {
     const location = useLocation()
     const navigate = useNavigate()
 
+    console.log(location)
     
     const [ article, setArticle ] = useState(location.state == null ? null : location.state.article)
     const [ loading, setLoading ] = useState(true)

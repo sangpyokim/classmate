@@ -7,7 +7,8 @@ import SubMenu from '../components/SubMenu'
 import { collection, doc, getDoc, getDocs, limit, orderBy, query } from 'firebase/firestore'
 import Loader from '../components/Loader'
 import RightAsides from '../components/RightAside'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import Timer from '../components/Timer'
 
 
 const Ppp = styled.div`
@@ -147,11 +148,16 @@ const MainCard = styled.div`
     &>div {
         width: 100%;
         height: 40px;
-        padding-left: 12px;
+        padding: 12px;
         display: flex;
         align-items: center;
+        justify-content: space-between;
         border-bottom: 1px solid ${props => props.theme.line};
         color: ${props => props.theme.color.second};
+    }
+    &>div>div:last-child {
+        font-size: 12px;
+        color: ${props => props.theme.color.third};
     }
     &>div:hover {
         cursor: pointer;
@@ -199,12 +205,13 @@ function Home() {
     }
 
     const getFreeBoardList = async() => {
-        const docRef = collection(FireStore, "Sunchon", 'Free_board', '1')
-        const q = query(docRef, orderBy('id', 'desc', limit(4)))
-        const docs = await getDocs(q)
-        docs.forEach( doc => {
-            console.log(doc.data())
+        const q = query(collection(FireStore, 'Sunchon', 'Free_board', '1'),orderBy('id', 'desc'), limit(4))
+        const querySnapshot = await getDocs(q)
+        const list = []
+        querySnapshot.forEach(doc => {
+            list.push(doc.data())
         })
+        setFreeList(list)
     }
 
     useEffect(() => {
@@ -217,7 +224,6 @@ function Home() {
             signOut(Auth)
         }
     }
-
 
     return (
         <>
@@ -265,10 +271,15 @@ function Home() {
                     <MainSection>
                         <MainCard>
                             <div onClick={() => navigate('/free-board')} >자유게시판</div>
-                            <div>게시글1</div>
-                            <div>게시글2</div>
-                            <div>게시글3</div>
-                            <div>게시글4</div>
+                            {
+                                freeList && freeList.map(article => (
+                            <div key={article.id} onClick={() => navigate(`/free-board/${article.id}`, {state: {article}})} >
+                                    {console.log(article)}
+                                    <div>{article.title}</div>
+                                    <Timer time={article.date} />
+                            </div>
+                                ))
+                            }
                         </MainCard>
                         <MainCard>
                             <div onClick={() => navigate('/secret-board')} >비밀게시판</div>
