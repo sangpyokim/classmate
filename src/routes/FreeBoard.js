@@ -11,6 +11,7 @@ import Timer from '../components/Timer';
 import { Link, useNavigate } from 'react-router-dom';
 import Loader from '../components/Loader'
 import Footer from '../components/Footer';
+import Pagination from '../components/Pagination'
 
 const Container = styled.div`
     width: 100%;
@@ -330,6 +331,7 @@ function FreeBoard() {
     }
     // 유효성 검사 -> 이미지 업로드 -> 업로드된 이미지 주소 가져오기 -> 게시물 등록!
 
+
   return (
       <Container>
           <ContentsWrapper>
@@ -384,8 +386,8 @@ function FreeBoard() {
                     {
                         loading 
                         ? <Loader /> 
-                        : article[pagination].map( article => ( article.shown ? 
-                            
+                        : article[pagination].map( article => ( 
+                            article.shown ? 
                             <MainContents key={article.id} to={`/free-board/${article.id}`} state={{article}} >
                                 <Article>
                                     <LeftArticle>
@@ -412,15 +414,7 @@ function FreeBoard() {
                         ))
                     }
                     <div >
-                        <Paginations>
-                    {
-                        pagination === 0 ? <input placeholder='게시물 검색' /> : <div><button onClick={() => setPagination(pagination-1)} >이전</button></div>
-                        
-                    }
-                    {
-                        pagination === article.length-1 ? <div></div> : <div><button onClick={() => setPagination(pagination+1)} >다음</button></div>
-                    }
-                        </Paginations>
+                        <Pagination pagination={pagination} setPagination={setPagination} article={article.length-1} setArticle={setArticle} searchBoard={"Free_board"} setLoading={setLoading} />
                     </div>
                 </MainContentContainer>
 

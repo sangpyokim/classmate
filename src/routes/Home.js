@@ -10,6 +10,7 @@ import RightAsides from '../components/RightAside'
 import { Link, useNavigate } from 'react-router-dom'
 import Timer from '../components/Timer'
 import Footer from '../components/Footer'
+import Pagination from '../components/Pagination'
 
 
 const Ppp = styled.div`
@@ -191,7 +192,6 @@ function Home() {
     const [ userdata, setUserData ] = useState("")
     const [ loading, setLoading ] = useState(true);
     const [ freeList, setFreeList ] = useState();
-
 
     const user = useSelector( state => state.user.value)
 

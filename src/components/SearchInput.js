@@ -10,13 +10,13 @@ const Input = styled.input`
     padding: 8px;
 `
 
-function SearchInput({placeholder}) {
+function SearchInput({placeholder, value, onChange}) {
     let navigate = useNavigate()
 
 
 
   return (
-    <Input placeholder={placeholder} />
+    <Input placeholder={placeholder} value={value} onChange={(e) => onChange(e.target.value)} />
   )
 }
 
