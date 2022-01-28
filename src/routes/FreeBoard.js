@@ -3,13 +3,14 @@ import styled from 'styled-components';
 import RightAsides from '../components/RightAside';
 import SearchInput from '../components/SearchInput';
 import SubMenu from '../components/SubMenu';
-import { collection, doc, getDoc, getDocs, onSnapshot, orderBy, query, setDoc } from 'firebase/firestore'
+import { collection, doc, getDoc, getDocs, limit, onSnapshot, orderBy, query, setDoc, where } from 'firebase/firestore'
 import { Auth, FireStore, Storage } from '../firebase';
 import { getDownloadURL, list, listAll, ref, uploadBytes } from 'firebase/storage';
 import { useSelector } from 'react-redux';
 import Timer from '../components/Timer';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Loader from '../components/Loader'
+import Footer from '../components/Footer';
 
 const Container = styled.div`
     width: 100%;
@@ -31,6 +32,10 @@ const ContentContainer = styled.div`
     align-items: center;
     justify-content: center;
     margin-top: 24px;
+    margin-bottom: 50px;
+`
+const ContentsWrapper = styled.div`
+    min-height: 100%;
 `
 const Contents = styled.div`
     display: flex;
@@ -108,10 +113,6 @@ const Textarea = styled.textarea`
     padding: 8px;
     color: ${props => props.theme.color.first};
 `
-const FileContainer = styled.img`
-    width: 50px;
-    height: 50px;
-`
 const ImageArea = styled.div`
     height: 100px;
     width: 100%;
@@ -162,11 +163,36 @@ const ArticleBottom = styled.div`
         color: ${props => props.theme.color.first};
     }
 `
-
-
 const RightArticle = styled.div`
     display: flex;
     align-items: flex-end;
+`
+const Paginations = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 8px;
+    &>div:hover {
+        border: 1px solid ${props => props.theme.color.main};
+        border-radius: 4px;
+    }
+    &>div>button {
+        width: 60px;
+        height: 35px;
+        border: 1px solid ${props => props.theme.color.main};
+        border-radius: 2px;
+        background-color: white;
+        color: ${props => props.theme.color.main};
+    }
+    &>div>button:hover {
+        width: 58px;
+        height: 33px;
+        cursor: pointer;
+        background-color: ${props => props.theme.color.main};
+        border: 1px solid white;
+        border-radius: 4px;
+        color:white;
+    }
 `
 
 const Day = ['일요일', "월요일", "화요일", "수요일", '목요일', '금요일', '토요일' ]
@@ -183,6 +209,8 @@ function FreeBoard() {
     })
     const [ imageUrl, setImageUrl ] = useState('')
     const [ article, setArticle ] = useState([])
+    const [ pagination, setPagination ] = useState(0);
+    let navigate = useNavigate()
 
     // 현재 유저 정보가져오기
     const user = useSelector( state => state.user.value)
@@ -197,19 +225,42 @@ function FreeBoard() {
           }
     }
 
-    // 문서 가져오기
+    // 문서 가져오기 + pagination 처음 100개 가져오고  -> pagination * 20 개만 가져오기   1 ~ 20*pagination, 앞 숫자 + 1 ~ 20*pagination
     const getDocuments = async() => {
         const docRef = collection(FireStore, "Sunchon", 'Free_board', '1')
-        const docs = await getDocs(docRef)
+        const q = query(docRef, where('shown', '==', true), orderBy('id', 'desc'), limit(100))
+        const querySnapshot = await getDocs(q);
+        const list = [];
+        const ex = [];
+        querySnapshot.forEach(doc => {
+                // 
+                console.log()
+                if( ex.length === 19 || doc.data().id === 1 ) {
+                    ex.push(doc.data())
+                    list.push(ex.slice()) // 배열의 깊은 복사
+                    ex.length= 0
+                } else{ 
+                    ex.push(doc.data())
+                }
+        })
+        // 41개를 20개씩 2개 + 1개씩 1개  
+        setArticle(list)
+        setLoading(false)
+    }
+
+    // 100개 이상불러와졌을 때
+    const test = async() => {
+        const docRef = collection(FireStore, "Sunchon", 'Free_board', '1')
+        const q = query(docRef , where('id', '>', '100'), where('shown', '==', true), orderBy('id', 'desc'), limit(200))
+        const querySnapshot = await getDocs(q);
         const list = []
-        docs.forEach( doc => {
-            list.unshift(doc.data())
+        querySnapshot.forEach(doc => {
+            list.push(doc.data())
         })
         setArticle(list)
         setLoading(false)
     }
 
-    
     useEffect(() => {
         getUserInfo()
         getDocuments()
@@ -232,7 +283,7 @@ function FreeBoard() {
     const setStorage = async(file, id) => {
         console.log("파일 업로드중")
         if(file == null) {
-            return null
+            return setDocuments(file)
         }
         const mountainRef = ref(Storage, `Sunchon/Free_board/${id}/${user}-${id}`)
         await uploadBytes(mountainRef, file).then( async(snapshot) => {
@@ -265,7 +316,8 @@ function FreeBoard() {
             date: currentDate,
             image: imageUrl,
             shown: true
-         }).then(console.log("게시글 등록 완료"))
+         })
+        navigate('/')
     }
     // 문서 작성하기, 유효성 검사
     const setDocument = async(e) => {
@@ -278,9 +330,9 @@ function FreeBoard() {
     }
     // 유효성 검사 -> 이미지 업로드 -> 업로드된 이미지 주소 가져오기 -> 게시물 등록!
 
-
   return (
       <Container>
+          <ContentsWrapper>
           <SubMenuContainer>
             <SubMenu />
           </SubMenuContainer>
@@ -332,7 +384,7 @@ function FreeBoard() {
                     {
                         loading 
                         ? <Loader /> 
-                        : article.map( article => ( article.shown ? 
+                        : article[pagination].map( article => ( article.shown ? 
                             
                             <MainContents key={article.id} to={`/free-board/${article.id}`} state={{article}} >
                                 <Article>
@@ -352,20 +404,31 @@ function FreeBoard() {
                                         <div>
                                             정보들
                                         </div>
-                                        {article.image === "" ? null : <img src={article.image} height={'75px'} width={'75px'} loading='lazy' />}
+                                        {article.image === null ? null : <img src={article.image} height={'75px'} width={'75px'} loading='lazy' />}
                                     </RightArticle>
                                 </Article>
                             </MainContents>
                             : null
                         ))
                     }
-
+                    <div >
+                        <Paginations>
+                    {
+                        pagination === 0 ? <input placeholder='게시물 검색' /> : <div><button onClick={() => setPagination(pagination-1)} >이전</button></div>
+                        
+                    }
+                    {
+                        pagination === article.length-1 ? <div></div> : <div><button onClick={() => setPagination(pagination+1)} >다음</button></div>
+                    }
+                        </Paginations>
+                    </div>
                 </MainContentContainer>
 
                 <RightAsides />
               </Contents>
           </ContentContainer>
-
+          </ContentsWrapper>
+          <Footer />
       </Container>
   )
 }

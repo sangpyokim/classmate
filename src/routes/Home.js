@@ -4,11 +4,12 @@ import { Auth, FireStore } from '../firebase'
 import { useSelector } from 'react-redux'
 import styled from 'styled-components'
 import SubMenu from '../components/SubMenu'
-import { collection, doc, getDoc, getDocs, limit, orderBy, query } from 'firebase/firestore'
+import { collection, doc, getDoc, getDocs, limit, orderBy, query, where } from 'firebase/firestore'
 import Loader from '../components/Loader'
 import RightAsides from '../components/RightAside'
 import { Link, useNavigate } from 'react-router-dom'
 import Timer from '../components/Timer'
+import Footer from '../components/Footer'
 
 
 const Ppp = styled.div`
@@ -16,7 +17,7 @@ const Ppp = styled.div`
 `
 const Container = styled.div`
     width: 100%;
-
+    height: 100vh;
 `
 const SubMenuContainer = styled.div`
     display: flex;
@@ -26,6 +27,11 @@ const SubMenuContainer = styled.div`
     min-width: 1180px;
     background-color: whitesmoke;
     border-bottom: 1px solid ${props => props.theme.line};
+`
+const ContentsWrapper = styled.div`
+    height: auto;
+    min-height: 100%;
+    margin-bottom: -75px;
 `
 const ContentContainer = styled.div`
     width: 100%;
@@ -203,9 +209,9 @@ function Home() {
           }
 
     }
-
+    // 자유게시판 최신 4개 가져오기! 
     const getFreeBoardList = async() => {
-        const q = query(collection(FireStore, 'Sunchon', 'Free_board', '1'),orderBy('id', 'desc'), limit(4))
+        const q = query(collection(FireStore, 'Sunchon', 'Free_board', '1'),orderBy('id', 'desc'), where('shown', '==', true),limit(4))
         const querySnapshot = await getDocs(q)
         const list = []
         querySnapshot.forEach(doc => {
@@ -231,66 +237,70 @@ function Home() {
         ? <Loader /> 
         :
         <Container>
+            <ContentsWrapper>
             <SubMenuContainer>
                 <SubMenu />
             </SubMenuContainer>
-            
-            <ContentContainer>
-                <Contents>
-                    <LeftAside>
-                        <Avatar>
-                            <Picture>
-                                ♥
-                            </Picture>
-                            <Nickname>
-                                {userdata.nickname}
-                            </Nickname>
-                            <Name>
-                                {userdata.name}
-                            </Name>
-                            <Ident>
-                                {userdata.id}
-                            </Ident>
-                            <AvatarButton>
-                                <div>
-                                    내정보
+                <ContentContainer>
+                    <Contents>
+                        <LeftAside>
+                            <Avatar>
+                                <Picture>
+                                    ♥
+                                </Picture>
+                                <Nickname>
+                                    {userdata.nickname}
+                                </Nickname>
+                                <Name>
+                                    {userdata.name}
+                                </Name>
+                                <Ident>
+                                    {userdata.id}
+                                </Ident>
+                                <AvatarButton>
+                                    <div>
+                                        내정보
+                                    </div>
+                                    <div onClick={() => logOut()} >
+                                        로그아웃
+                                    </div>
+                                </AvatarButton>
+                            </Avatar>
+
+                            <Card>
+                                <div>내가 쓴 글</div>
+                                <div>댓글 단 글</div>
+                                <div>즐겨찾기</div>
+                            </Card>
+                        </LeftAside>
+
+                        <MainSection>
+                            <MainCard>
+                                <div onClick={() => navigate('/free-board')} >자유게시판</div>
+                                {
+                                    freeList && freeList.map(article => (
+                                <div key={article.id} onClick={() => navigate(`/free-board/${article.id}`, {state: {article}})} >
+                                        <div>{article.title}</div>
+                                        <Timer time={article.date} />
                                 </div>
-                                <div onClick={() => logOut()} >
-                                    로그아웃
-                                </div>
-                            </AvatarButton>
-                        </Avatar>
+                                    ))
+                                }
+                            </MainCard>
+                            <MainCard>
+                                <div onClick={() => navigate('/secret-board')} >비밀게시판</div>
+                                <div>댓글 구현할 때 만들게용!</div>
+                                <div>게시글2</div>
+                            </MainCard>
+                        </MainSection>
 
-                        <Card>
-                            <div>내가 쓴 글</div>
-                            <div>댓글 단 글</div>
-                            <div>즐겨찾기</div>
-                        </Card>
-                    </LeftAside>
+                        
+                        <RightAsides />
+                    </Contents>
+                </ContentContainer>
 
-                    <MainSection>
-                        <MainCard>
-                            <div onClick={() => navigate('/free-board')} >자유게시판</div>
-                            {
-                                freeList && freeList.map(article => (
-                            <div key={article.id} onClick={() => navigate(`/free-board/${article.id}`, {state: {article}})} >
-                                    <div>{article.title}</div>
-                                    <Timer time={article.date} />
-                            </div>
-                                ))
-                            }
-                        </MainCard>
-                        <MainCard>
-                            <div onClick={() => navigate('/secret-board')} >비밀게시판</div>
-                            <div>댓글 구현할 때 만들게용!</div>
-                            <div>게시글2</div>
-                        </MainCard>
-                    </MainSection>
+            </ContentsWrapper>
+                <Footer />
 
-                    
-                    <RightAsides />
-                </Contents>
-            </ContentContainer>
         </Container>
         }
         </>
