@@ -5,6 +5,10 @@ import RightAsides from '../components/RightAside';
 import SubMenu from '../components/SubMenu';
 import Timer from '../components/Timer';
 import Loader from '../components/Loader';
+import { FireStore } from '../firebase'
+import { doc, updateDoc } from 'firebase/firestore';
+import Footer from '../components/Footer'
+import Writting from '../components/Writting';
 
 
 const Container = styled.div`
@@ -57,8 +61,28 @@ const MainContentsWrap = styled.div`
 const MainContentsUser = styled.div`
     display: flex;
     align-items:center;
+    justify-content: space-between;
 `
-// img 태그로 바꿔야함
+const UserWrapper = styled.div`
+    display:flex;
+    align-items: center;
+`
+const UpdateDeleteWrapper = styled.div`
+    display: flex;
+    align-items: center;
+    &>div {
+        color: ${props => props.theme.color.third};
+        font-size: 12px;
+        font-weight: 500;
+    }
+    &>div:first-child {
+        margin-right: 8px;
+    }
+    &>div:hover {
+        cursor: pointer;
+    }
+`
+    // img 태그로 바꿔야함
 const UserImg = styled.div`
     font-size: 42px;
     margin-right: 8px;
@@ -99,13 +123,42 @@ const Image = styled.img`
 `
 
 
+const UpdateCancleButtonWrapper = styled.div`
+    width: 100px;
+    height: 35px;
+    border: 1px solid ${props => props.theme.color.main};
+    border-radius: 2px;
+    background-color: white;
+    color: ${props => props.theme.color.main};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+`
+const UpdateCancleButton = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    &:hover {
+        width: 98px;
+        height: 33px;
+        cursor: pointer;
+        background-color: ${props => props.theme.color.main};
+        border: 1px solid white;
+        border-radius: 4px;
+        color:white;
+    }
+`
 
 function FreeBoardDetail() {
     const location = useLocation() // state 값 article
     const navigate = useNavigate()
-    
+    const params = useParams()
+
     const [ article, setArticle ] = useState(location.state == null ? null : location.state.article)
     const [ loading, setLoading ] = useState(true)
+    const [ updateToggle, setUpdateToggle ] = useState(false);
 
 
     useEffect(() => {
@@ -117,13 +170,25 @@ function FreeBoardDetail() {
     },[])
 
 
+    // 진정한 삭제아님 그냥 안보이게만 백업을 못해서...
+    const deleteDoc = async() => {
+        if( window.confirm("삭제하시겠습니까?") ) {
+            const docRef = doc(FireStore, 'Sunchon', 'Free_board', '1', params.id);
+            await updateDoc(docRef, {
+                shown: false
+            })
+            alert("삭제되었습니다.")
+            navigate('/free-board')
+        }
+    }
+    
   return (
       <>
       {loading 
         ?
         <Loader />
          :
-
+        
       <Container>
           <SubMenuContainer>
               <SubMenu />
@@ -134,18 +199,38 @@ function FreeBoardDetail() {
                     <MainContentContainer>
                         <MainTitle to={'/free-board'} >자유게시판</MainTitle>
 
+                        {updateToggle 
+                        ? 
+                            <div>
+                                <Writting type={"update"} />
+                                <UpdateCancleButtonWrapper onClick={() => setUpdateToggle(false)} >
+                                    <UpdateCancleButton>
+                                        {`< 글 수정 취소`}
+
+                                    </UpdateCancleButton>
+                                </UpdateCancleButtonWrapper>
+                            </div> 
+                        :
+                         
+                         
                         <MainContentsWrap>
                             <MainContentsUser>
-                                <UserImg>
-                                    ♥
-                                </UserImg>
+                                <UserWrapper>
+                                    <UserImg>
+                                        ♥
+                                    </UserImg>
 
-                                <ContentsInfo>
-                                    <div>
-                                        익명
-                                    </div>
-                                    <Timer time={article && article.date} />
-                                </ContentsInfo>
+                                    <ContentsInfo>
+                                        <div>
+                                            익명
+                                        </div>
+                                        <Timer time={article && article.date} />
+                                    </ContentsInfo>
+                                </UserWrapper>
+                                <UpdateDeleteWrapper>
+                                    <div onClick={() => setUpdateToggle(true)} >수정</div>
+                                    <div onClick={() => deleteDoc()} >삭제</div>
+                                </UpdateDeleteWrapper>
                             </MainContentsUser>
 
                             <MainContents>
@@ -166,12 +251,14 @@ function FreeBoardDetail() {
                                 댓글들, 댓글 달기
                             </MainContentsComment>
                         </MainContentsWrap>
+                        }
                     </MainContentContainer>
 
                     
                     <RightAsides />
                 </Contents>
           </ContentContainer>
+          <Footer />
       </Container>
     }
   </>

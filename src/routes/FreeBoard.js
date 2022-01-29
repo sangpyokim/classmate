@@ -12,6 +12,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Loader from '../components/Loader'
 import Footer from '../components/Footer';
 import Pagination from '../components/Pagination'
+import Writting from '../components/Writting';
 
 const Container = styled.div`
     width: 100%;
@@ -199,32 +200,12 @@ const Paginations = styled.div`
 const Day = ['일요일', "월요일", "화요일", "수요일", '목요일', '금요일', '토요일' ]
 
 function FreeBoard() {
-    const [ userdata, setUserData ] = useState("")
     const [ loading, setLoading ] = useState(true);
     const [ writeToggle, setWriteToggle ] = useState(false);
-    const [ title, setTitle ] = useState('');
-    const [ contents, setContents ] = useState('')
-    const [ files, setFiles ] = useState({
-        detailImageFile: null,
-        detailImageUrl: null,
-    })
-    const [ imageUrl, setImageUrl ] = useState('')
     const [ article, setArticle ] = useState([])
     const [ pagination, setPagination ] = useState(0);
-    let navigate = useNavigate()
 
-    // 현재 유저 정보가져오기
-    const user = useSelector( state => state.user.value)
-    const getUserInfo = async () => {
-        const docRef = doc(FireStore, "Users_Info", user);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-            setUserData(docSnap.data());
-          } else {
-            // doc.data() will be undefined in this case
-            alert("잘못된 접근!");
-          }
-    }
+
 
     // 문서 가져오기 + pagination 처음 100개 가져오고  -> pagination * 20 개만 가져오기   1 ~ 20*pagination, 앞 숫자 + 1 ~ 20*pagination
     const getDocuments = async() => {
@@ -263,75 +244,9 @@ function FreeBoard() {
     }
 
     useEffect(() => {
-        getUserInfo()
         getDocuments()
     }, [])
     
-
-    // 이미지 미리보기
-    const setImageFromFile = ({ file, setImageUrl }) => {
-        let reader = new FileReader();
-        reader.onload = function () {
-           setImageUrl({ result: reader.result });
-        };
-        reader.readAsDataURL(file);
-     };
-
-
-
-
-    // 파일 업로드
-    const setStorage = async(file, id) => {
-        console.log("파일 업로드중")
-        if(file == null) {
-            return setDocuments(file)
-        }
-        const mountainRef = ref(Storage, `Sunchon/Free_board/${id}/${user}-${id}`)
-        await uploadBytes(mountainRef, file).then( async(snapshot) => {
-            console.log("업로드 성공, 이미지 주소 불러오기")
-            await getImageUrl(file, id)
-        })
-    }
-    // 이미지 주소 가져오기
-    const getImageUrl = async(file, id) => {
-        console.log("시작")
-        const url = await getDownloadURL(ref( Storage, `Sunchon/Free_board/${id}/${user}-${id}`))
-            .then(async(res) => {
-                setDocuments(res)
-            }).then(res => console.log("이미지 주소 완료"))
-    }
-    // 게시글 등록하기
-    const setDocuments = async(imageUrl) => {
-
-        //작성날짜
-        const dat = new Date()
-        const currentDate = `${dat.getFullYear()}년 ${dat.getMonth()+1}월 ${dat.getDate()}일 ${dat.getHours()}시 ${dat.getMinutes()}분 ${dat.getSeconds()}초 ${Day[dat.getDay()]} `
-        // 문서의 개수 
-        const docs = await getDocs(collection(FireStore, "Sunchon", 'Free_board', '1'))
-
-        await setDoc(doc(FireStore, 'Sunchon', 'Free_board', '1', `${docs.size + 1}`), { 
-            id: docs.size + 1,
-            user: userdata,
-            title,
-            contents,
-            date: currentDate,
-            image: imageUrl,
-            shown: true
-         })
-        navigate('/')
-    }
-    // 문서 작성하기, 유효성 검사
-    const setDocument = async(e) => {
-        e.preventDefault()
-
-        const docs = await getDocs(collection(FireStore, "Sunchon", 'Free_board', '1'))
-
-        window.confirm("글을 게시하겠습니까?")
-        && await setStorage(files.detailImageFile, docs.size+1)
-    }
-    // 유효성 검사 -> 이미지 업로드 -> 업로드된 이미지 주소 가져오기 -> 게시물 등록!
-
-
   return (
       <Container>
           <ContentsWrapper>
@@ -347,35 +262,7 @@ function FreeBoard() {
                     {
                         writeToggle
                             ?
-                        <WritingContainer onSubmit={(e) => setDocument(e)} >
-                            <input type="text" placeholder='글 제목' maxLength={20} value={title} onChange={e =>setTitle(e.target.value)} />
-                            <div><Textarea placeholder='글 내용을 작성해주세요!' value={contents} onChange={(e) => setContents(e.target.value)} /></div>
-
-                            {
-                                files.detailImageFile && (
-                                    <ImageArea>
-                                        <img src={files.detailImageUrl} width={'75px'} height={'75px'} />
-
-                                    </ImageArea>
-
-                                )
-                            }
-
-                            <div>
-                                <input 
-                                    onChange={ ({ target: { files } }) => {
-                                        if(files.length ) {
-                                            setImageFromFile({
-                                                file: files[0],
-                                                setImageUrl: ({ result }) => setFiles({detailImageFile: files[0], detailImageUrl: result})
-                                            })
-                                        }
-                                    }}
-                                    type="file" id='file' accept="image/png, image/jpeg" multiple />
-                                <input type={"submit"} value="작성" />
-                            </div>
-
-                        </WritingContainer>
+                        <Writting type="create" />
                             :
                         <SearchInputContainer onClick={() => setWriteToggle(true)} >
                                 <SearchInput placeholder='새 글을 작성해주세요!' />

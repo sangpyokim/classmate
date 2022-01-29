@@ -67,6 +67,10 @@ function Pagination({pagination, setPagination, article, setArticle, searchBoard
 
   const getDocuments = async(e) => {
     e.preventDefault();
+    if(searchText.length < 2) {
+      alert('2글자 이상 적어주세요.')
+      return null
+    }
 
     const docRef = collection(FireStore, "Sunchon", `${searchBoard}`, '1')
     const q = query(docRef, where('shown', '==', true), orderBy('id', 'desc'), limit(1000))
