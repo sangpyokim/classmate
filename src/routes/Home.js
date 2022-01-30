@@ -68,10 +68,11 @@ const Avatar = styled.div`
     background-color: whitesmoke;
     margin-bottom:4px;
 `
-const Picture = styled.div`
-    font-size: 64px;
-    margin-top: 8px;
-    margin-bottom: 8px;
+const UserImgContainer = styled.div``
+const UserImg = styled.img`
+    width: 58px;
+    border-radius: 8px;
+    margin-bottom: 12px;
 `
 const Nickname = styled.div`
     font-size: 18px;
@@ -245,9 +246,9 @@ function Home() {
                     <Contents>
                         <LeftAside>
                             <Avatar>
-                                <Picture>
-                                    ♥
-                                </Picture>
+                                    <UserImgContainer>
+                                        {userdata.image == null ? <UserImg src="https://firebasestorage.googleapis.com/v0/b/classmate-e.appspot.com/o/default_image.png?alt=media&token=c2ca3608-9fea-4021-82f7-bb5640bbbba9" /> : <UserImg src={userdata.image} width={'20px'} />}
+                                    </UserImgContainer>
                                 <Nickname>
                                     {userdata.nickname}
                                 </Nickname>

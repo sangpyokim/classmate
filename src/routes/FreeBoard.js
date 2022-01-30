@@ -196,8 +196,37 @@ const Paginations = styled.div`
         color:white;
     }
 `
+const Status = styled.div`
+    display: flex;
+    align-items: center;
+    height: 75px;
+    align-items: flex-end;
+    opacity: 0.9;
+    font-size: 12px;
+    &>div {
+        margin-right: 8px;
+        margin-left: 4px;
+        font-size: 12px;
+        font-weight: 600;
+        white-space: pre;
+        color: black;
+    }
+    &>div:first-child {
+        font-size: 10px;
+    }
+`
+const Heart = styled.div`
+    display: flex;
+    align-items: center;
+    line-height: 12px;
+    &>div{
+        margin-left: 6px;
+        font-size: 12px;
+        color: ${props => props.theme.color.main};
+    }
+`
 
-const Day = ['일요일', "월요일", "화요일", "수요일", '목요일', '금요일', '토요일' ]
+
 
 function FreeBoard() {
     const [ loading, setLoading ] = useState(true);
@@ -226,19 +255,6 @@ function FreeBoard() {
                 }
         })
         // 41개를 20개씩 2개 + 1개씩 1개  
-        setArticle(list)
-        setLoading(false)
-    }
-
-    // 100개 이상불러와졌을 때
-    const test = async() => {
-        const docRef = collection(FireStore, "Sunchon", 'Free_board', '1')
-        const q = query(docRef , where('id', '>', '100'), where('shown', '==', true), orderBy('id', 'desc'), limit(200))
-        const querySnapshot = await getDocs(q);
-        const list = []
-        querySnapshot.forEach(doc => {
-            list.push(doc.data())
-        })
         setArticle(list)
         setLoading(false)
     }
@@ -273,7 +289,7 @@ function FreeBoard() {
                     {
                         loading 
                         ? <Loader /> 
-                        : article[pagination].map( article => ( 
+                        : article.length >= 1 && article[pagination].map( article => ( 
                             article.shown ? 
                             <MainContents key={article.id} to={`/free-board/${article.id}`} state={{article}} >
                                 <Article>
@@ -290,9 +306,13 @@ function FreeBoard() {
                                     </LeftArticle>
 
                                     <RightArticle>
-                                        <div>
-                                            정보들
-                                        </div>
+                                        <Status>
+                                            <Heart>
+                                                ❤️
+                                                <div>0</div>
+                                            </Heart>
+                                            <div>🗨  {article && article.comment == null ? 0 : article.comment.length}</div>
+                                        </Status>
                                         {article.image === null ? null : <img src={article.image} height={'75px'} width={'75px'} loading='lazy' />}
                                     </RightArticle>
                                 </Article>

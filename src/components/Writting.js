@@ -102,7 +102,7 @@ function Writting({ type }) {
 
 
      const setDocuments = async(imageUrl= null) => {
-        console.log("게시글 등록 시작, 90%", title, contents, imageUrl)
+        console.log("게시글 등록 시작, 90%")
         //작성날짜
         const dat = new Date()
         const currentDate = `${dat.getFullYear()}년 ${dat.getMonth()+1}월 ${dat.getDate()}일 ${dat.getHours()}시 ${dat.getMinutes()}분 ${dat.getSeconds()}초 ${Day[dat.getDay()]} `
@@ -112,6 +112,7 @@ function Writting({ type }) {
         await  type === 'create' ? setDoc(docRef, { 
             id: docs.size + 1,
             user: userdata,
+            uid: user,
             title,
             contents,
             date: currentDate,
@@ -140,7 +141,6 @@ function Writting({ type }) {
     //삭제 후 재등록!
     const updateStorage = async(id) => {
         if(files.detailImageFile === null) {
-            console.log("??")
             return setDocuments()
         }
         // 문서에 image check
@@ -166,8 +166,14 @@ function Writting({ type }) {
             }).then(res => console.log("이미지 주소 불러오기 완료, 70%"))
     }
 
+    //유효성검사
     const setDocument = async(e) => {
         e.preventDefault()
+
+        if ( title.length < 1 || contents.length < 1 ) {
+            return alert("내용을 입력해주세요.")
+        }
+
         const docs = await getDocs(collection(FireStore, "Sunchon", 'Free_board', '1'))
 
         window.confirm("글을 게시하겠습니까?")

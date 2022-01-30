@@ -6,9 +6,11 @@ import SubMenu from '../components/SubMenu';
 import Timer from '../components/Timer';
 import Loader from '../components/Loader';
 import { FireStore } from '../firebase'
-import { doc, updateDoc } from 'firebase/firestore';
+import { arrayUnion, doc, getDoc, updateDoc } from 'firebase/firestore';
 import Footer from '../components/Footer'
 import Writting from '../components/Writting';
+import { useSelector } from 'react-redux';
+import Comments from '../components/Comments';
 
 
 const Container = styled.div`
@@ -56,6 +58,7 @@ const MainContentsWrap = styled.div`
     &>div {
         padding: 12px;
     }
+
     
 `
 const MainContentsUser = styled.div`
@@ -83,9 +86,13 @@ const UpdateDeleteWrapper = styled.div`
     }
 `
     // img 태그로 바꿔야함
-const UserImg = styled.div`
-    font-size: 42px;
+const UserImg = styled.img`
     margin-right: 8px;
+    width: 42px;
+    border-radius: 8px;
+`
+const UserImgContainer = styled.div`
+
 `
 const ContentsInfo = styled.div`
     color: ${props => props.theme.color.third};
@@ -115,14 +122,28 @@ const MainContentsFooter = styled.div`
     border-bottom: 1px solid ${props => props.theme.line};
 
 `
-const MainContentsComment = styled.div`
-
+const MainContentsComment = styled.form`
+    display: flex;
+    justify-content: space-between;
 `
+const CommentInput = styled.input`
+    height: 40px;
+    background-color: whitesmoke;
+    width: 100%;
+    padding-left: 10px;
+    border: none;
+`
+const CommentSubmit = styled.input`
+    width: 44px;
+    border: none;
+    background-color: ${props => props.theme.color.main};
+    color: white;
+`
+
+
 const Image = styled.img`
     margin-top: 18px;
 `
-
-
 const UpdateCancleButtonWrapper = styled.div`
     width: 100px;
     height: 35px;
@@ -151,21 +172,37 @@ const UpdateCancleButton = styled.div`
     }
 `
 
+const Day = ['일요일', "월요일", "화요일", "수요일", '목요일', '금요일', '토요일' ]
+
 function FreeBoardDetail() {
     const location = useLocation() // state 값 article
     const navigate = useNavigate()
     const params = useParams()
+    const user = useSelector( state => state.user.value);
 
     const [ article, setArticle ] = useState(location.state == null ? null : location.state.article)
     const [ loading, setLoading ] = useState(true)
     const [ updateToggle, setUpdateToggle ] = useState(false);
+    const [ userData, setUserData] = useState()
+    const [ comment, setComment ] = useState('')
 
+    const getUserInfo = async () => {
+        const docRef = doc(FireStore, "Users_Info", user);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            setUserData(docSnap.data());
+          } else {
+            // doc.data() will be undefined in this case
+            alert("잘못된 접근!");
+          }
+    }
 
     useEffect(() => {
         if ( location.state === null ) {
             alert('잘못된 접근!')
             navigate('/')
         }   
+        getUserInfo()
         setLoading(false)
     },[])
 
@@ -182,6 +219,29 @@ function FreeBoardDetail() {
         }
     }
     
+    const onSubmitComment = async(e) => {
+        e.preventDefault()
+        const docRef = doc(FireStore, 'Sunchon', 'Free_board', '1', params.id);
+        const docs = await getDoc(docRef) 
+
+        const dat = new Date()
+        const currentDate = `${dat.getFullYear()}년 ${dat.getMonth()+1}월 ${dat.getDate()}일 ${dat.getHours()}시 ${dat.getMinutes()}분 ${dat.getSeconds()}초 ${Day[dat.getDay()]} `
+
+        updateDoc(docRef, {
+            comment: arrayUnion({
+                id: docs.data().comment == undefined ? 1 : docs.data().comment.length + 1,
+                comment,
+                uid: user,
+                user: userData,
+                date: currentDate,
+                shown: true,
+                heart: [],
+            })
+        })
+        setComment('')
+    }
+
+
   return (
       <>
       {loading 
@@ -216,9 +276,10 @@ function FreeBoardDetail() {
                         <MainContentsWrap>
                             <MainContentsUser>
                                 <UserWrapper>
-                                    <UserImg>
-                                        ♥
-                                    </UserImg>
+                                    <UserImgContainer>
+                                        {article.image == null ? <UserImg src="https://firebasestorage.googleapis.com/v0/b/classmate-e.appspot.com/o/default_image.png?alt=media&token=c2ca3608-9fea-4021-82f7-bb5640bbbba9" /> : <UserImg src={article.image} width={'20px'} />}
+
+                                    </UserImgContainer>
 
                                     <ContentsInfo>
                                         <div>
@@ -228,8 +289,12 @@ function FreeBoardDetail() {
                                     </ContentsInfo>
                                 </UserWrapper>
                                 <UpdateDeleteWrapper>
-                                    <div onClick={() => setUpdateToggle(true)} >수정</div>
-                                    <div onClick={() => deleteDoc()} >삭제</div>
+                                    {user === article.uid ? 
+                                    <>
+                                        <div onClick={() => setUpdateToggle(true)} >수정</div>
+                                        <div onClick={() => deleteDoc()} >삭제</div>
+                                    </>
+                                    : null}
                                 </UpdateDeleteWrapper>
                             </MainContentsUser>
 
@@ -247,13 +312,17 @@ function FreeBoardDetail() {
                                 footer( 좋아요, 댓글 수, 즐겨찾기 수, 좋아요버튼, 즐겨찾기 버튼)
                             </MainContentsFooter>
 
-                            <MainContentsComment>
-                                댓글들, 댓글 달기
+                            <Comments />
+                           
+
+                            <MainContentsComment onSubmit={(e) => onSubmitComment(e)} >
+                                <CommentInput placeholder='댓글을 입력하세요.' onChange={e => setComment(e.target.value)} value={comment} />
+                                <CommentSubmit type={'submit'} value={"작성"} />
                             </MainContentsComment>
+
                         </MainContentsWrap>
                         }
                     </MainContentContainer>
-
                     
                     <RightAsides />
                 </Contents>

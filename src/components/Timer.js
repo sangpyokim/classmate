@@ -3,7 +3,6 @@ import React from 'react';
 
 // 현재시간 - 인자값  1시간 미만 몇분 전, 이후 작성 된 시간
 function Timer({time}) {
-
     if ( time == null) {
       return null
     }
