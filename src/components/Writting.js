@@ -31,18 +31,25 @@ const WritingContainer = styled.form`
         justify-content: space-between;
         padding: 0 0 0 8px;
         color: ${props => props.theme.color.third};
-        &>input:last-child {
+        &>div>input:last-child {
             position: relative;
-            top: -1px;
-            left: 2px;
+            top: -2px;
+            left: 1px;
             background-color: ${props => props.theme.color.main};
-            height: 34px;
-            width: 40px;
+            height: 37px;
+            width: 38px;
             border: none;
             color: white;
         }
+        &>div>input:last-child:hover {
+            color: ${props => props.theme.color.main};
+            background-color: white;
+            font-weight: 600;
+            border: 1px solid ${props => props.theme.color.main};
+        }
     }
 `
+
 const Textarea = styled.textarea`
     resize: none;
     border: none;
@@ -208,7 +215,9 @@ function Writting({ type }) {
                     }
                 }}
                 type="file" id='file' accept="image/png, image/jpeg" multiple />
-            <input type={"submit"} value="작성" />
+            <div>
+                <input type={"submit"} value="작성" />
+            </div>
         </div>
     </WritingContainer>
   )

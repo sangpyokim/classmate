@@ -33,6 +33,9 @@ const ContentContainer = styled.div`
     justify-content: center;
     margin-top: 24px;
 `
+const Article = styled.div`
+    width: 100%;
+`
 const Contents = styled.div`
     display: flex;
     justify-content: space-between;
@@ -117,6 +120,8 @@ const MainContentsContetns  = styled.div`
     white-space: pre-wrap;
     font-size: 14px;
     line-height: 16px;
+    display: flex;
+    flex-direction: column;
 `
 const MainContentsFooter = styled.div`
     border-bottom: 1px solid ${props => props.theme.line};
@@ -135,14 +140,34 @@ const CommentInput = styled.input`
 `
 const CommentSubmit = styled.input`
     width: 44px;
+    height: 40px;
     border: none;
     background-color: ${props => props.theme.color.main};
     color: white;
+    &:hover {
+        cursor: pointer;
+        height: 38px;
+        width: 42px;
+        border: 1px solid white;
+        background-color: white;
+        color: ${props => props.theme.color.main};
+        font-weight: 600;
+    }
+`
+const CommentSubmitContainer = styled.div`
+    height: 100%;
+    height: 40px;
+    display: flex;
+    align-items:center;
+    justify-content:center;
+    &:hover {
+        border: 1px solid ${props => props.theme.color.main};
+    }
 `
 
-
 const Image = styled.img`
-    margin-top: 18px;
+    margin-top: 28px;
+    max-width: 100%;
 `
 const UpdateCancleButtonWrapper = styled.div`
     width: 100px;
@@ -303,8 +328,10 @@ function FreeBoardDetail() {
                                     {article && article.title}
                                 </MainContentsTitle>
                                 <MainContentsContetns>
-                                    {article && article.contents}
-                                    <Image src={article.image} width={'100%'} />
+                                    <Article>
+                                        {article && article.contents}
+                                    </Article>
+                                    <Image src={article.image}  />
                                 </MainContentsContetns>
                             </MainContents>
 
@@ -317,7 +344,9 @@ function FreeBoardDetail() {
 
                             <MainContentsComment onSubmit={(e) => onSubmitComment(e)} >
                                 <CommentInput placeholder='댓글을 입력하세요.' onChange={e => setComment(e.target.value)} value={comment} />
-                                <CommentSubmit type={'submit'} value={"작성"} />
+                                <CommentSubmitContainer>
+                                    <CommentSubmit type={'submit'} value={"작성"} />
+                                </CommentSubmitContainer>
                             </MainContentsComment>
 
                         </MainContentsWrap>
