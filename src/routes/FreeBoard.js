@@ -3,12 +3,10 @@ import styled from 'styled-components';
 import RightAsides from '../components/RightAside';
 import SearchInput from '../components/SearchInput';
 import SubMenu from '../components/SubMenu';
-import { collection, doc, getDoc, getDocs, limit, onSnapshot, orderBy, query, setDoc, where } from 'firebase/firestore'
-import { Auth, FireStore, Storage } from '../firebase';
-import { getDownloadURL, list, listAll, ref, uploadBytes } from 'firebase/storage';
-import { useSelector } from 'react-redux';
+import { collection, getDocs, limit, orderBy, query, where } from 'firebase/firestore'
+import { FireStore } from '../firebase';
 import Timer from '../components/Timer';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Loader from '../components/Loader'
 import Footer from '../components/Footer';
 import Pagination from '../components/Pagination'
@@ -17,7 +15,6 @@ import Writting from '../components/Writting';
 const Container = styled.div`
     width: 100%;
 `
-
 const SubMenuContainer = styled.div`
     display: flex;
     align-items: center;
@@ -72,57 +69,6 @@ const SearchInputContainer = styled.div`
         color: ${props => props.theme.color.third};
     }
 `
-const WritingContainer = styled.form`
-    border: 2px solid ${props => props.theme.line};
-    margin-bottom: 4px;
-    &>input:first-child {
-        border: none;
-        border-bottom: 1px solid ${props => props.theme.line};
-        width: 100%;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        padding-left: 8px;
-        font-weight: 600;
-        font-size: 16px;
-        color: ${props => props.theme.color.first};
-    }
-    &>div:last-child {
-        height: 32px;
-        display: flex;
-        align-items:center;
-        justify-content: space-between;
-        padding: 0 0 0 8px;
-        color: ${props => props.theme.color.third};
-        &>input:last-child {
-            position: relative;
-            top: -1px;
-            left: 2px;
-            background-color: ${props => props.theme.color.main};
-            height: 34px;
-            width: 40px;
-            border: none;
-            color: white;
-        }
-    }
-`
-const Textarea = styled.textarea`
-    resize: none;
-    border: none;
-    height: 250px;
-    width: 100%;
-    border-bottom: 1px solid ${props => props.theme.line};
-    padding: 8px;
-    color: ${props => props.theme.color.first};
-`
-const ImageArea = styled.div`
-    height: 100px;
-    width: 100%;
-    display:flex;
-    align-items:center;
-    padding-left: 12px;
-    border-bottom: 1px solid ${props => props.theme.line};
-`
 const MainContents = styled(Link)`
     height: 100px;
     padding: 8px;
@@ -169,43 +115,14 @@ const RightArticle = styled.div`
     display: flex;
     align-items: flex-end;
 `
-const Paginations = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 8px;
-    &>div:hover {
-        border: 1px solid ${props => props.theme.color.main};
-        border-radius: 4px;
-    }
-    &>div>button {
-        width: 60px;
-        height: 35px;
-        border: 1px solid ${props => props.theme.color.main};
-        border-radius: 2px;
-        background-color: white;
-        color: ${props => props.theme.color.main};
-    }
-    &>div>button:hover {
-        width: 58px;
-        height: 33px;
-        cursor: pointer;
-        background-color: ${props => props.theme.color.main};
-        border: 1px solid white;
-        border-radius: 4px;
-        color:white;
-    }
-`
 const Status = styled.div`
     display: flex;
     align-items: center;
-    height: 75px;
     align-items: flex-end;
+    height: 75px;
     opacity: 0.9;
-    font-size: 12px;
     &>div {
-        margin-right: 8px;
-        margin-left: 4px;
+        margin-right: 4px;
         font-size: 12px;
         font-weight: 600;
         white-space: pre;
@@ -219,13 +136,29 @@ const Heart = styled.div`
     display: flex;
     align-items: center;
     line-height: 12px;
+    font-size: 10px;
     &>div{
-        margin-left: 6px;
+        margin-left: 4px;
         font-size: 12px;
         color: ${props => props.theme.color.main};
     }
 `
-
+const Piture = styled.div`
+        display: flex;
+    font-size: 10px;
+    &>div {
+        margin-left: 4px;
+        font-size: 12px;
+        color: #29ae74;
+        font-weight: 600;
+    }
+`
+const ArticleComment = styled.div`
+    display: flex;
+`
+const ArticleImg =styled.img`
+    border-radius: 4px;
+`
 
 
 function FreeBoard() {
@@ -245,7 +178,6 @@ function FreeBoard() {
         const ex = [];
         querySnapshot.forEach(doc => {
                 // 
-                console.log()
                 if( ex.length === 19 || doc.data().id === 1 ) {
                     ex.push(doc.data())
                     list.push(ex.slice()) // 배열의 깊은 복사
@@ -263,6 +195,7 @@ function FreeBoard() {
         getDocuments()
     }, [])
     
+
   return (
       <Container>
           <ContentsWrapper>
@@ -307,13 +240,23 @@ function FreeBoard() {
 
                                     <RightArticle>
                                         <Status>
+                                        {article.image === null ? null : 
+                                            <Piture>
+                                                🖼️
+                                                <div>
+                                                    1
+                                                </div>
+                                            </Piture>}
+
                                             <Heart>
                                                 ❤️
-                                                <div>0</div>
+                                                <div>{article && article.heart == null ? 0 : article.heart.length}</div>
                                             </Heart>
-                                            <div>🗨  {article && article.comment == null ? 0 : article.comment.length}</div>
+                                            <ArticleComment>🗨 {article && article.comment == null ? 0 : 
+                                                <div>{article.comment.length}</div>}
+                                            </ArticleComment>
                                         </Status>
-                                        {article.image === null ? null : <img src={article.image} height={'75px'} width={'75px'} loading='lazy' />}
+                                        {article.image === null ? null : <ArticleImg src={article.image} height={'75px'} width={'75px'} loading='lazy' />}
                                     </RightArticle>
                                 </Article>
                             </MainContents>

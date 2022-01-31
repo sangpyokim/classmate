@@ -125,6 +125,10 @@ const MainContentsContetns  = styled.div`
 `
 const MainContentsFooter = styled.div`
     border-bottom: 1px solid ${props => props.theme.line};
+    &>div:first-child {
+        display: flex;
+        margin-bottom: 12px;
+    }
 
 `
 const MainContentsComment = styled.form`
@@ -196,6 +200,58 @@ const UpdateCancleButton = styled.div`
         color:white;
     }
 `
+const Heart = styled.div`
+    display: flex;
+    font-size: 10px;
+    margin-left: 6px;
+    margin-right: 12px;
+    opacity: 0.9;
+    &>div{
+        font-size:12px;
+        margin-left: 6px;
+        font-weight: 600;
+        color: ${props => props.theme.color.main};
+    }
+`
+const ArticleComment = styled.div`
+    display: flex;
+    font-size:12px;
+    opacity: 0.9;
+
+    &>div{
+        margin-left: 4px;
+        font-weight: 600;
+
+    }
+`
+const HeartUpButton = styled.div`
+    display: flex;
+    align-items: center;
+    width: fit-content;
+    padding: 6px;
+    background-color: whitesmoke;
+    border-radius: 4px;
+    color: ${props => props.theme.color.third};
+    font-weight: 600;
+    font-size: 10px;
+    &>div {
+        margin-left: 4px;
+        font-size: 12px;
+    }
+`
+const ArticleImage = styled.div`
+    display: flex;
+    font-size: 10px;
+    margin-right: 4px;
+    &>div {
+        margin-left: 4px;
+        font-size: 12px;
+        color: #29ae74;
+        font-weight: 600;
+    }
+`
+
+
 
 const Day = ['일요일', "월요일", "화요일", "수요일", '목요일', '금요일', '토요일' ]
 
@@ -266,6 +322,44 @@ function FreeBoardDetail() {
         setComment('')
     }
 
+    const articleHeartUp = async(id) => {
+        if( window.confirm("공감하시겠습니까?") ) {
+            const commmentRef = doc(FireStore, 'Sunchon', 'Free_board', '1', params.id)
+            const docRef = await getDoc(commmentRef)
+            const heartData = docRef.data().heart
+
+            console.log(heartData)
+            if( heartData.every( heart => heart != id )) {
+                heartData.push(id)
+                await updateDoc(commmentRef, {
+                    heart: heartData
+                })
+                alert('공감하였습니다.')
+            }else {
+                alert("이미 공감하셨습니다.")
+            }
+        }
+    }
+
+    const onClickHeartUp = async(id) => {
+        if( window.confirm("공감하시겠습니까?") ) {
+            const commmentRef = doc(FireStore, 'Sunchon', 'Free_board', '1', params.id)
+            const aa = await getDoc(commmentRef)
+            const commentData = aa.data().comment
+
+            if ( commentData[id].heart.every((heart) => heart != user)) {
+                commentData[id].heart.push(user)
+                await updateDoc(commmentRef, {
+                    comment: commentData
+                })
+                alert("공감하였습니다.")
+            }else {
+                alert("이미 공감하였습니다.")
+            }
+
+            
+        }
+    }
 
   return (
       <>
@@ -302,7 +396,7 @@ function FreeBoardDetail() {
                             <MainContentsUser>
                                 <UserWrapper>
                                     <UserImgContainer>
-                                        {article.image == null ? <UserImg src="https://firebasestorage.googleapis.com/v0/b/classmate-e.appspot.com/o/default_image.png?alt=media&token=c2ca3608-9fea-4021-82f7-bb5640bbbba9" /> : <UserImg src={article.image} width={'20px'} />}
+                                        {article.image == null ? <UserImg src="../asset/default_image.png" /> : <UserImg src={article.image} width={'20px'} />}
 
                                     </UserImgContainer>
 
@@ -336,7 +430,29 @@ function FreeBoardDetail() {
                             </MainContents>
 
                             <MainContentsFooter>
-                                footer( 좋아요, 댓글 수, 즐겨찾기 수, 좋아요버튼, 즐겨찾기 버튼)
+                                <div>
+                                    {article.image === null ? null : 
+                                    <ArticleImage>
+                                        🖼️
+                                        <div>
+                                            1
+                                        </div>
+                                    </ArticleImage>}
+                                    <Heart>❤️{article && article.heart == null ? 0 : 
+                                        <div>{article.heart.length}</div>}
+                                    </Heart>
+
+                                    <ArticleComment>
+                                        🗨 {article && article.comment == null ? 0 : 
+                                            <div>{article.comment.length}</div>}
+                                    </ArticleComment>
+                                </div>
+                                <HeartUpButton>
+                                 ❤️ <div onClick={() => articleHeartUp(user)} >
+                                        공감하기
+                                    </div>
+                                </HeartUpButton>
+
                             </MainContentsFooter>
 
                             <Comments />

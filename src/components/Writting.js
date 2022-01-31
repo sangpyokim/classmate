@@ -25,7 +25,7 @@ const WritingContainer = styled.form`
         color: ${props => props.theme.color.first};
     }
     &>div:last-child {
-        height: 32px;
+        height: 34px;
         display: flex;
         align-items:center;
         justify-content: space-between;
@@ -124,7 +124,8 @@ function Writting({ type }) {
             contents,
             date: currentDate,
             image: imageUrl,
-            shown: true
+            shown: true,
+            heart:[]
          }) : updateDoc(docRef, {
             title,
             contents,

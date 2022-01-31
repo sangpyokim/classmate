@@ -1,21 +1,17 @@
 import React, { useEffect, useState } from 'react'
-import { signOut, updateCurrentUser } from 'firebase/auth'
+import { signOut } from 'firebase/auth'
 import { Auth, FireStore } from '../firebase'
 import { useSelector } from 'react-redux'
 import styled from 'styled-components'
 import SubMenu from '../components/SubMenu'
-import { collection, doc, getDoc, getDocs, limit, orderBy, query, where } from 'firebase/firestore'
+import { collection, collectionGroup, doc, getDoc, getDocs, limit, orderBy, query, where } from 'firebase/firestore'
 import Loader from '../components/Loader'
 import RightAsides from '../components/RightAside'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import Timer from '../components/Timer'
 import Footer from '../components/Footer'
-import Pagination from '../components/Pagination'
 
 
-const Ppp = styled.div`
-    white-space: pre-wrap;
-`
 const Container = styled.div`
     width: 100%;
     height: 100vh;
@@ -220,10 +216,22 @@ function Home() {
         })
         setFreeList(list)
     }
+    // 오늘 전체게시판 중에서 공감수 높은 것 2개
+    const getTodayPopularList = async() => {
+        console.log("A")
+        const docsRef = query(collectionGroup(FireStore, '1'), limit(2))
+        const querySnapshot = await getDocs(docsRef)
+        querySnapshot.forEach( doc => {
+            console.log(doc.data())
+        })
+
+
+    }
 
     useEffect(() => {
         getUserInfo()
         getFreeBoardList()
+        getTodayPopularList()
     }, [])
 
     const logOut = () => {
@@ -231,6 +239,7 @@ function Home() {
             signOut(Auth)
         }
     }
+
 
     return (
         <>

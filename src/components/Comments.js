@@ -1,4 +1,4 @@
-import { arrayRemove, arrayUnion, collection, doc, getDoc, onSnapshot, query, updateDoc, where } from 'firebase/firestore';
+import {  doc, getDoc, onSnapshot, query, updateDoc } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
@@ -75,7 +75,7 @@ const Hearts = styled.div`
     display: flex;
     align-items: center;
     &>div{
-        margin-left: 6px;
+        margin-left: 4px;
         font-size: 12px;
         font-weight: 600;
         color: ${props => props.theme.color.main};
@@ -158,7 +158,7 @@ function Comments() {
             <CommentContainer key={article.date} >
                 <CommentUserWrapper>
                     <CommentUser>
-                        {article.image == null ? <ProfileContainer><UserProfile src="https://firebasestorage.googleapis.com/v0/b/classmate-e.appspot.com/o/default_image.png?alt=media&token=c2ca3608-9fea-4021-82f7-bb5640bbbba9" /></ProfileContainer> : <ProfileContainer><UserProfile src={article.image} width={'20px'} /></ProfileContainer>}
+                        {article.image == null ? <ProfileContainer><UserProfile src="../asset/default_image.png" /></ProfileContainer> : <ProfileContainer><UserProfile src={article.image} width={'20px'} /></ProfileContainer>}
                         <div>
                             {articles.uid === article.uid 
                                 ? <div>익명(글쓴이)</div> 
@@ -185,12 +185,14 @@ function Comments() {
                 </Comment>
                 <TimerContainer>
                     <Timer time={article.date} />
+
+                    {article.heart.length === 0 ? null :
                     <Hearts>
                         ❤️  
                         <div>
                             {article.heart.length}
                         </div>
-                    </Hearts>
+                    </Hearts>}
                 </TimerContainer>
             </CommentContainer>
         : null
