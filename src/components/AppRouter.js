@@ -22,8 +22,14 @@ import FreeBoardDetail from '../routes/FreeBoardDetail'
 import SecretBoard from '../routes/SecretBoard'
 //timetale
 import TimeTable from '../routes/TimeTable'
+import RightAside from './RightAside'
+import styled from 'styled-components'
 
 
+
+const AppRouterContainer = styled.div`
+
+`
 
 
 

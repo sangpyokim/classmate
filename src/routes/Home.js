@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { signOut } from 'firebase/auth'
 import { Auth, FireStore } from '../firebase'
 import { useSelector } from 'react-redux'
@@ -6,10 +6,11 @@ import styled from 'styled-components'
 import SubMenu from '../components/SubMenu'
 import { collection, collectionGroup, doc, getDoc, getDocs, limit, orderBy, query, where } from 'firebase/firestore'
 import Loader from '../components/Loader'
-import RightAsides from '../components/RightAside'
 import { useNavigate } from 'react-router-dom'
 import Timer from '../components/Timer'
 import Footer from '../components/Footer'
+import FirebaseAPI from '../components/FirebaseAPI'
+import RightAsides from '../components/RightAside'
 
 
 const Container = styled.div`
@@ -183,63 +184,41 @@ const MainCard = styled.div`
     }
 
 `
-
+const RightAside = styled.div`
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width: 325px;
+`
 
 function Home() {
     const [ userdata, setUserData ] = useState("")
     const [ loading, setLoading ] = useState(true);
     const [ freeList, setFreeList ] = useState();
-
+    const [ secretList, setSecretList ] = useState() 
+    
+    let navigate = useNavigate()
+    
     const user = useSelector( state => state.user.value)
 
-    let navigate = useNavigate()
-
-    const getUserInfo = async () => {
-        const docRef = doc(FireStore, "Users_Info", user);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-            setUserData(docSnap.data());
-            setLoading(false);
-          } else {
-            // doc.data() will be undefined in this case
-            alert("잘못된 접근!");
-          }
-
-    }
-    // 자유게시판 최신 4개 가져오기! 
-    const getFreeBoardList = async() => {
-        const q = query(collection(FireStore, 'Sunchon', 'Free_board', '1'),orderBy('id', 'desc'), where('shown', '==', true),limit(4))
-        const querySnapshot = await getDocs(q)
-        const list = []
-        querySnapshot.forEach(doc => {
-            list.push(doc.data())
-        })
-        setFreeList(list)
-    }
-    // 오늘 전체게시판 중에서 공감수 높은 것 2개
-    const getTodayPopularList = async() => {
-        console.log("A")
-        const docsRef = query(collectionGroup(FireStore, '1'), limit(2))
-        const querySnapshot = await getDocs(docsRef)
-        querySnapshot.forEach( doc => {
-            console.log(doc.data())
-        })
-
-
-    }
+    const isMounted = useRef(false)
 
     useEffect(() => {
-        getUserInfo()
-        getFreeBoardList()
-        getTodayPopularList()
+        isMounted.current = true
+        FirebaseAPI.getUserInfo(user, setUserData )
+        if (FirebaseAPI.readDocuments('Sunchon', 'Free_board', 100, setFreeList, isMounted) && FirebaseAPI.readDocuments('Sunchon', 'Secret_board', 2, setSecretList, isMounted)) {
+            setLoading(false)
+        }
+
+        return () => isMounted.current = false
     }, [])
+
 
     const logOut = () => {
         if(window.confirm("로그아웃 하시겠습니까?")){
             signOut(Auth)
         }
     }
-
 
     return (
         <>
@@ -288,7 +267,7 @@ function Home() {
                             <MainCard>
                                 <div onClick={() => navigate('/free-board')} >자유게시판</div>
                                 {
-                                    freeList && freeList.map(article => (
+                                    freeList && freeList[0].map(article => (
                                 <div key={article.id} onClick={() => navigate(`/free-board/${article.id}`, {state: {article}})} >
                                         <div>{article.title}</div>
                                         <Timer time={article.date} />
@@ -298,8 +277,14 @@ function Home() {
                             </MainCard>
                             <MainCard>
                                 <div onClick={() => navigate('/secret-board')} >비밀게시판</div>
-                                <div>댓글 구현할 때 만들게용!</div>
-                                <div>게시글2</div>
+                                {
+                                    secretList && secretList[0].map(article => (
+                                <div key={article.id} onClick={() => navigate(`/free-board/${article.id}`, {state: {article}})} >
+                                        <div>{article.title}</div>
+                                        <Timer time={article.date} />
+                                </div>
+                                    ))
+                                }
                             </MainCard>
                         </MainSection>
 

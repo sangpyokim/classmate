@@ -68,8 +68,8 @@ const ImageArea = styled.div`
     border-bottom: 1px solid ${props => props.theme.line};
 `
 const Day = ['일요일', "월요일", "화요일", "수요일", '목요일', '금요일', '토요일' ]
-// 무슨 타입?( create or update ), title, contents, files
-function Writting({ type }) {
+// 무슨 타입?( create or update ), univ, board
+function Writting({ type , univ, board}) {
     const [ title, setTitle ] = useState('')
     const [ contents, setContents ] = useState('')
     const [ userdata, setUserData] = useState()
@@ -114,8 +114,8 @@ function Writting({ type }) {
         const dat = new Date()
         const currentDate = `${dat.getFullYear()}년 ${dat.getMonth()+1}월 ${dat.getDate()}일 ${dat.getHours()}시 ${dat.getMinutes()}분 ${dat.getSeconds()}초 ${Day[dat.getDay()]} `
         // 문서의 개수
-        const docs = await getDocs(collection(FireStore, "Sunchon", 'Free_board', '1'))
-        const docRef = doc(FireStore, 'Sunchon', 'Free_board', '1', `${type === 'create' ? docs.size + 1 : params.id}`)
+        const docs = await getDocs(collection(FireStore, univ, board, '1'))
+        const docRef = doc(FireStore, univ, board, '1', `${type === 'create' ? docs.size + 1 : params.id}`)
         await  type === 'create' ? setDoc(docRef, { 
             id: docs.size + 1,
             user: userdata,
@@ -125,7 +125,8 @@ function Writting({ type }) {
             date: currentDate,
             image: imageUrl,
             shown: true,
-            heart:[]
+            heart:[],
+            board: '자유게시판'
          }) : updateDoc(docRef, {
             title,
             contents,
@@ -140,7 +141,7 @@ function Writting({ type }) {
         if(file == null) {
             return setDocuments(file)
         }
-        const imageRef = ref(Storage, `Sunchon/Free_board/${id}/${user}-${id}`)
+        const imageRef = ref(Storage, `${univ}/${board}/${id}/${user}-${id}`)
         await uploadBytes(imageRef, file).then( async(snapshot) => {
             console.log("파일업로드 완료, 30%")
             await getImageUrl(file, id)
@@ -152,14 +153,14 @@ function Writting({ type }) {
             return setDocuments()
         }
         // 문서에 image check
-        const docRef = doc(FireStore, "Sunchon", 'Free_board', '1', `${id}`)
+        const docRef = doc(FireStore, univ, board, '1', `${id}`)
         const docSnap = await getDoc(docRef);
         if(docSnap.data().image === null) {
             return setStorage(files.detailImageFile, id)
         }
         
         //삭제
-        const imageRef = ref(Storage, `Sunchon/Free_board/${id}/${user}-${id}`);
+        const imageRef = ref(Storage, `${univ}/${board}/${id}/${user}-${id}`);
         deleteObject(imageRef).then(() => {
             console.log("이미지 삭제완료.")
             setStorage(files.detailImageFile, id)
@@ -168,7 +169,7 @@ function Writting({ type }) {
     }
     const getImageUrl = async(file, id) => {
         console.log("이미지 주소 불러오기 시작, 50%")
-        const url = await getDownloadURL(ref( Storage, `Sunchon/Free_board/${id}/${user}-${id}`))
+        const url = await getDownloadURL(ref( Storage, `${univ}/${board}/${id}/${user}-${id}`))
             .then(async(res) => {
                 setDocuments(res)
             }).then(res => console.log("이미지 주소 불러오기 완료, 70%"))
@@ -182,7 +183,7 @@ function Writting({ type }) {
             return alert("내용을 입력해주세요.")
         }
 
-        const docs = await getDocs(collection(FireStore, "Sunchon", 'Free_board', '1'))
+        const docs = await getDocs(collection(FireStore, univ, board, '1'))
 
         window.confirm("글을 게시하겠습니까?")
         && type === 'create' ? await setStorage(files.detailImageFile, docs.size+1) : await updateStorage(params.id)

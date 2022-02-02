@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import RightAsides from '../components/RightAside';
 import SearchInput from '../components/SearchInput';
@@ -11,6 +11,7 @@ import Loader from '../components/Loader'
 import Footer from '../components/Footer';
 import Pagination from '../components/Pagination'
 import Writting from '../components/Writting';
+import FirebaseAPI, { readDocuments } from '../components/FirebaseAPI';
 
 const Container = styled.div`
     width: 100%;
@@ -167,35 +168,16 @@ function FreeBoard() {
     const [ article, setArticle ] = useState([])
     const [ pagination, setPagination ] = useState(0);
 
-
-
-    // 문서 가져오기 + pagination 처음 100개 가져오고  -> pagination * 20 개만 가져오기   1 ~ 20*pagination, 앞 숫자 + 1 ~ 20*pagination
-    const getDocuments = async() => {
-        const docRef = collection(FireStore, "Sunchon", 'Free_board', '1')
-        const q = query(docRef, where('shown', '==', true), orderBy('id', 'desc'), limit(100))
-        const querySnapshot = await getDocs(q);
-        const list = [];
-        const ex = [];
-        querySnapshot.forEach(doc => {
-                // 
-                if( ex.length === 19 || doc.data().id === 1 ) {
-                    ex.push(doc.data())
-                    list.push(ex.slice()) // 배열의 깊은 복사
-                    ex.length= 0
-                } else{ 
-                    ex.push(doc.data())
-                }
-        })
-        // 41개를 20개씩 2개 + 1개씩 1개  
-        setArticle(list)
-        setLoading(false)
-    }
+    const isMounted = useRef(false)
 
     useEffect(() => {
-        getDocuments()
-    }, [])
-    
+        isMounted.current = true
+        if (FirebaseAPI.readDocuments('Sunchon', 'Free_board', 100, setArticle, isMounted) ) {
+            setLoading(false)
+        }
 
+        return () => isMounted.current = false
+    }, [])
   return (
       <Container>
           <ContentsWrapper>
@@ -211,7 +193,7 @@ function FreeBoard() {
                     {
                         writeToggle
                             ?
-                        <Writting type="create" />
+                        <Writting type="create" univ={'Sunchon'} board={"Free_board"} />
                             :
                         <SearchInputContainer onClick={() => setWriteToggle(true)} >
                                 <SearchInput placeholder='새 글을 작성해주세요!' />

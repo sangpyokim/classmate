@@ -34,11 +34,13 @@ function Timer({time}) {
 
     return (
       <div>
-          { timer > 3 
+          { 
+          timer > 3 
             ? timer < 10 
               ? `${timer}분 전` 
               : oldTimer 
-            : "방금 전"}
+            : "방금 전"
+          }
       </div>
   )
 }

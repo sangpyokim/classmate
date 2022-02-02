@@ -149,16 +149,17 @@ function Comments() {
         }
     }
 
+
     // 맨처음에 댓글을의 uid를 배열에 다 저장함 => 중복 제거, 글쓴이 제거 => uid 배열 중에 없는 uid면 uid 배열에 추가하고 그 uid 인덱스값을 번호로 지정 잇는 uid면 인덱스값을 빈호로!
     return (
         <CommentWrapper>
 
         {articles && articles.comment != undefined && articles.comment.map( (article, index) => (
             article.shown ?
-            <CommentContainer key={article.date} >
+            <CommentContainer key={index} >
                 <CommentUserWrapper>
                     <CommentUser>
-                        {article.image == null ? <ProfileContainer><UserProfile src="../asset/default_image.png" /></ProfileContainer> : <ProfileContainer><UserProfile src={article.image} width={'20px'} /></ProfileContainer>}
+                        {article.image == null ? <ProfileContainer><UserProfile src="https://firebasestorage.googleapis.com/v0/b/classmate-e.appspot.com/o/default_image.png?alt=media&token=c2ca3608-9fea-4021-82f7-bb5640bbbba9" /></ProfileContainer> : <ProfileContainer><UserProfile src={article.image} width={'20px'} /></ProfileContainer>}
                         <div>
                             {articles.uid === article.uid 
                                 ? <div>익명(글쓴이)</div> 

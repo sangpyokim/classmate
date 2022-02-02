@@ -92,6 +92,7 @@ const UpdateDeleteWrapper = styled.div`
 const UserImg = styled.img`
     margin-right: 8px;
     width: 42px;
+    height: 42px;
     border-radius: 8px;
 `
 const UserImgContainer = styled.div`
@@ -261,7 +262,7 @@ function FreeBoardDetail() {
     const params = useParams()
     const user = useSelector( state => state.user.value);
 
-    const [ article, setArticle ] = useState(location.state == null ? null : location.state.article)
+    const [ article, setArticle ] = useState()
     const [ loading, setLoading ] = useState(true)
     const [ updateToggle, setUpdateToggle ] = useState(false);
     const [ userData, setUserData] = useState()
@@ -282,11 +283,13 @@ function FreeBoardDetail() {
         if ( location.state === null ) {
             alert('잘못된 접근!')
             navigate('/')
-        }   
-        getUserInfo()
-        setLoading(false)
-    },[])
+        } else {
+            setArticle(location.state == null ? null : location.state.article)
+            getUserInfo()
+            setLoading(false)
+        }
 
+    }, [location])
 
     // 진정한 삭제아님 그냥 안보이게만 백업을 못해서...
     const deleteDoc = async() => {
@@ -302,6 +305,10 @@ function FreeBoardDetail() {
     
     const onSubmitComment = async(e) => {
         e.preventDefault()
+        if( comment.length === 0 ) {
+            alert('한글자 이상 작성해주세요!')
+            return null
+        }
         const docRef = doc(FireStore, 'Sunchon', 'Free_board', '1', params.id);
         const docs = await getDoc(docRef) 
 
@@ -327,8 +334,6 @@ function FreeBoardDetail() {
             const commmentRef = doc(FireStore, 'Sunchon', 'Free_board', '1', params.id)
             const docRef = await getDoc(commmentRef)
             const heartData = docRef.data().heart
-
-            console.log(heartData)
             if( heartData.every( heart => heart != id )) {
                 heartData.push(id)
                 await updateDoc(commmentRef, {
@@ -396,7 +401,7 @@ function FreeBoardDetail() {
                             <MainContentsUser>
                                 <UserWrapper>
                                     <UserImgContainer>
-                                        {article.image == null ? <UserImg src="../asset/default_image.png" /> : <UserImg src={article.image} width={'20px'} />}
+                                        {userData && userData.image == null ? <UserImg src="https://firebasestorage.googleapis.com/v0/b/classmate-e.appspot.com/o/default_image.png?alt=media&token=c2ca3608-9fea-4021-82f7-bb5640bbbba9" /> : <UserImg src={article.image} width={'20px'} />}
 
                                     </UserImgContainer>
 

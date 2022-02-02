@@ -71,7 +71,6 @@ function Pagination({pagination, setPagination, article, setArticle, searchBoard
       alert('2글자 이상 적어주세요.')
       return null
     }
-
     const docRef = collection(FireStore, "Sunchon", `${searchBoard}`, '1')
     const q = query(docRef, where('shown', '==', true), orderBy('id', 'desc'), limit(1000))
     const querySnapshot = await getDocs(q);
@@ -88,10 +87,8 @@ function Pagination({pagination, setPagination, article, setArticle, searchBoard
           list2.push(doc)
           list3.push(list2.slice())
           list2.length = 0
-          console.log("1번")
         }else { // 검색된 것이 20개 미만인 경우
           list3.push(list2.slice())
-          console.log("2번")
         }
       } else if ( doc.title.indexOf(searchText) >= 0 || doc.contents.indexOf(searchText) >= 0 ) {
         list2.push(doc)
@@ -100,6 +97,7 @@ function Pagination({pagination, setPagination, article, setArticle, searchBoard
     })
     setArticle(list3)
 }
+
 
   return (
     <Paginations>
@@ -112,7 +110,7 @@ function Pagination({pagination, setPagination, article, setArticle, searchBoard
       <div>
         <button onClick={() => setPagination(pagination-1)} >이전</button>
       </div>}
-      {pagination === article ? <div></div> : <div><button onClick={() => setPagination(pagination+1)} >다음</button></div>}
+      {pagination === article || article == -1 ? <div></div> : <div><button onClick={() => setPagination(pagination+1)} >다음</button></div>}
     </Paginations>  
   )
 }
