@@ -184,32 +184,104 @@ const MainCard = styled.div`
     }
 
 `
-const RightAside = styled.div`
+const SecretCard = styled.div`
+    height: fit-content;
+    width: 300px;
+    border: 1px solid ${props => props.theme.line};
+    border-bottom: none;
+`
+const SecretCardTitle = styled.div`
+    width: 100%;
+    height: 40px;
+    padding: 12px;
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid ${props => props.theme.line};
+    color: ${props => props.theme.color.main};
+    font-size: 14px;
+    font-weight: 700;
+    &:hover {
+        cursor: pointer;
+    }
+`
+const ArticleContainer = styled.div`
+    display: flex;
     flex-direction: column;
-    width: 325px;
+    justify-content: space-between;
+    height: 80px;
+    border-bottom: 1px solid ${props => props.theme.line};
+    padding:12px;
+    padding-top: 16px;
+    color: ${props => props.theme.color.second};
+
+    &:hover {
+        cursor: pointer;
+        background-color: whitesmoke;    
+    }
+`
+const Status = styled.div`
+    display: flex;
+    align-items: center;
+    opacity: 0.9;
+
+    &>div {
+        margin-right: 4px;
+        font-size: 12px;
+        font-weight: 600;
+        color: black;
+    }
+    &>div:first-child {
+        font-size: 12px;
+        color: ${props => props.theme.color.third};
+        font-weight: 500;
+        margin-right: 6px;
+    }
+`
+const Heart = styled.div`
+    display: flex;
+    align-items: center;
+    font-size: 10px;
+    &>div{
+        margin-left: 4px;
+        font-size: 12px;
+        color: ${props => props.theme.color.main};
+    }
+`
+const Piture = styled.div`
+    display: flex;
+    font-size: 10px;
+    &>div {
+        margin-left: 4px;
+        font-size: 12px;
+        color: #29ae74;
+        font-weight: 600;
+    }
+`
+const ArticleComment = styled.div`
+    display: flex;
 `
 
 function Home() {
     const [ userdata, setUserData ] = useState("")
     const [ loading, setLoading ] = useState(true);
-    const [ freeList, setFreeList ] = useState();
-    const [ secretList, setSecretList ] = useState() 
+    const [ freeList, setFreeList ] = useState([]);
+    const [ secretList, setSecretList ] = useState([]) 
     
     let navigate = useNavigate()
     
     const user = useSelector( state => state.user.value)
 
+    
+
     const isMounted = useRef(false)
 
     useEffect(() => {
         isMounted.current = true
-        FirebaseAPI.getUserInfo(user, setUserData )
-        if (FirebaseAPI.readDocuments('Sunchon', 'Free_board', 100, setFreeList, isMounted) && FirebaseAPI.readDocuments('Sunchon', 'Secret_board', 2, setSecretList, isMounted)) {
+        FirebaseAPI.getUserInfo(user, setUserData)
+        if (FirebaseAPI.readDocuments(user,'free-board', 100, setFreeList, isMounted) && FirebaseAPI.readDocuments(user, 'secret-board', 2, setSecretList, isMounted)) {
             setLoading(false)
         }
-
         return () => isMounted.current = false
     }, [])
 
@@ -219,6 +291,7 @@ function Home() {
             signOut(Auth)
         }
     }
+
 
     return (
         <>
@@ -267,7 +340,7 @@ function Home() {
                             <MainCard>
                                 <div onClick={() => navigate('/free-board')} >자유게시판</div>
                                 {
-                                    freeList && freeList[0].map(article => (
+                                    freeList && freeList[0] && freeList[0].map(article => (
                                 <div key={article.id} onClick={() => navigate(`/free-board/${article.id}`, {state: {article}})} >
                                         <div>{article.title}</div>
                                         <Timer time={article.date} />
@@ -275,17 +348,33 @@ function Home() {
                                     ))
                                 }
                             </MainCard>
-                            <MainCard>
-                                <div onClick={() => navigate('/secret-board')} >비밀게시판</div>
+                            <SecretCard>
+                                <SecretCardTitle onClick={() => navigate('/secret-board')} >비밀게시판</SecretCardTitle>
                                 {
-                                    secretList && secretList[0].map(article => (
-                                <div key={article.id} onClick={() => navigate(`/free-board/${article.id}`, {state: {article}})} >
+                                secretList && secretList[0] && secretList[0].map(article => (
+                                    <ArticleContainer key={article.id} onClick={() => navigate(`/secret-board/${article.id}`, {state: {article}})} >
                                         <div>{article.title}</div>
-                                        <Timer time={article.date} />
-                                </div>
-                                    ))
-                                }
-                            </MainCard>
+                                        <Status>
+                                                <Timer time={article.date} />
+                                        {article.image === null ? null : 
+                                            <Piture>
+                                                🖼️
+                                                <div>
+                                                    1
+                                                </div>
+                                            </Piture>}
+
+                                            <Heart>
+                                                ❤️
+                                                <div>{article && article.heart == null ? 0 : article.heart.length}</div>
+                                            </Heart>
+                                            <ArticleComment>🗨 {article && article.comment == null ? 0 : 
+                                                <div>{article.comment.length}</div>}
+                                            </ArticleComment>
+                                        </Status>
+                                    </ArticleContainer>
+                                ))}
+                            </SecretCard>
                         </MainSection>
 
                         

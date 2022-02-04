@@ -5,9 +5,6 @@ import styled from 'styled-components'
 import { Auth } from '../firebase'
 import theme from '../components/theme'  
 
-
-//로고
-
 //바디
 const Container = styled.div`
     display:flex;

@@ -4,9 +4,11 @@ import DDay from "./DDay";
 
 
 const FirebaseAPI = {
-    readDocuments: async(Univ, Board, limits = 100 ,setArticle, isMounted) => {
+    readDocuments: async(uid, Board, limits = 100 ,setArticle, isMounted) => {
+        const userRef = doc(FireStore, 'Users_Info', uid)
+        const docSnap = await getDoc(userRef);
 
-        const docRef = collection(FireStore, Univ, Board, '1')
+        const docRef = collection(FireStore, docSnap.data().univ, Board, '1')
         const q = query(docRef, where('shown', '==', true), orderBy('id', 'desc'), limit(limits))
         const querySnapshot = await getDocs(q)
 
@@ -21,17 +23,20 @@ const FirebaseAPI = {
                 ex.push(doc.data())
             }
         })
-
         if ( isMounted.current ) {
-            setArticle(list)
+            if( list.length === 0 ) {
+                setArticle(false)
+            } else {
+                setArticle(list)
         }
+    }
         return true
 
     },
     getTodayPopularList: async(Univ, setPopularList, isMounted ) => { 
-        const freeDocsRef = query(collection(FireStore, Univ, 'Free_board', '1'), where("date", '>', DDay(-7) ), orderBy("date" ,'desc')) //자유게시판 
-        const secretdocsRef = query(collection(FireStore, Univ, 'Secret_board', '1'),where("date", '>', DDay(-7) ), orderBy("date" ,'desc')) //비밀게시판
-
+        const freeDocsRef = query(collection(FireStore, Univ, 'free-board', '1'), where("date", '>', DDay(-7) ), orderBy("date" ,'desc')) //자유게시판 
+        const secretdocsRef = query(collection(FireStore, Univ, 'secret-board', '1'),where("date", '>', DDay(-7) ), orderBy("date" ,'desc')) //비밀게시판
+    
         const freeQuerySnapshot = await getDocs(freeDocsRef)
         const secretQuerySnapshot = await getDocs(secretdocsRef)
         const popularList = [];
@@ -42,7 +47,6 @@ const FirebaseAPI = {
             popularList.push(doc.data())
         })
         popularList.sort( (a, b) => b.heart.length - a.heart.length)
-
         if ( isMounted.current ) {
             setPopularList(popularList.slice(0,2))
         }

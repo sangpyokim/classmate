@@ -1,9 +1,10 @@
 import {  doc, getDoc, onSnapshot, query, updateDoc } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { FireStore } from '../firebase';
+import FirebaseAPI from './FirebaseAPI';
 import Timer from './Timer';
 
 const CommentWrapper = styled.a`
@@ -89,19 +90,22 @@ const StatusContainer = styled.div`
 `
 
 function Comments() {
-    const params = useParams()
-    
+    const params = useParams()    
+    const location = useLocation() // state 값 article
+    const pathname= location.pathname.substring(1, location.pathname.lastIndexOf('/'))
     const [ articles, setArticle ] = useState();
     const [ count, setCount ] = useState(1);
     const [ commentUser, setCommentUser ] = useState()
  
     const user = useSelector( state => state.user.value)
 
-    useEffect(() => {
-        const commentSnapshot = onSnapshot(doc(FireStore, 'Sunchon', 'Free_board', '1', params.id), (doc) => {
+    useEffect(async() => {
+        const userRef = doc(FireStore, 'Users_Info', user)
+        const docSnap = await getDoc(userRef);
+        const commentSnapshot = onSnapshot(doc(FireStore, docSnap.data().univ, pathname, '1', params.id), (doc) => {
               setArticle(doc.data())
               const list = []
-              if (doc.data().comment != undefined ) {
+              if (doc.data() != undefined ) {
                   doc.data().comment.map( res => list.push(res.uid))
                   const set = new Set(list)
                   const uniqArr = [...set]
@@ -115,7 +119,7 @@ function Comments() {
 
     const onClickCommentDelete = async(id) => {
         if( window.confirm("삭제하시겠습니까?") ) {
-            const CommmentRef = doc(FireStore, 'Sunchon', 'Free_board', '1', params.id)
+            const CommmentRef = doc(FireStore, 'Sunchon', 'free-board', '1', params.id)
             const aa = await getDoc(CommmentRef)
             const commentData = aa.data().comment
 
@@ -131,7 +135,7 @@ function Comments() {
     // 자추 가능!
     const onClickHeartUp = async(id) => {
         if( window.confirm("공감하시겠습니까?") ) {
-            const CommmentRef = doc(FireStore, 'Sunchon', 'Free_board', '1', params.id)
+            const CommmentRef = doc(FireStore, 'Sunchon', 'free-board', '1', params.id)
             const aa = await getDoc(CommmentRef)
             const commentData = aa.data().comment
 

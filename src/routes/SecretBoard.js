@@ -12,6 +12,7 @@ import Footer from '../components/Footer';
 import Pagination from '../components/Pagination'
 import Writting from '../components/Writting';
 import FirebaseAPI, { readDocuments } from '../components/FirebaseAPI';
+import { useSelector } from 'react-redux';
 
 const Container = styled.div`
     width: 100%;
@@ -170,9 +171,11 @@ function FreeBoard() {
 
     const isMounted = useRef(false)
 
+    const user = useSelector( state => state.user.value)
+
     useEffect(() => {
         isMounted.current = true
-        if (FirebaseAPI.readDocuments('Sunchon', 'Secret_board', 100, setArticle, isMounted) ) {
+        if (FirebaseAPI.readDocuments(user, 'secret-board', 100, setArticle, isMounted) ) {
             setLoading(false)
         }
 
@@ -193,7 +196,7 @@ function FreeBoard() {
                     {
                         writeToggle
                             ?
-                            <Writting type="create" univ={'Sunchon'} board={"Secret_board"} />
+                            <Writting type="create"  board={"secret-board"} boardName={"비밀게시판"} />
                             :
                         <SearchInputContainer onClick={() => setWriteToggle(true)} >
                                 <SearchInput placeholder='새 글을 작성해주세요!' />

@@ -258,15 +258,17 @@ const Day = ['일요일', "월요일", "화요일", "수요일", '목요일', '�
 
 function FreeBoardDetail() {
     const location = useLocation() // state 값 article
+    const pathname= location.pathname.substring(1, location.pathname.lastIndexOf('/'))
+
     const navigate = useNavigate()
     const params = useParams()
     const user = useSelector( state => state.user.value);
-
     const [ article, setArticle ] = useState()
     const [ loading, setLoading ] = useState(true)
     const [ updateToggle, setUpdateToggle ] = useState(false);
     const [ userData, setUserData] = useState()
     const [ comment, setComment ] = useState('')
+
 
     const getUserInfo = async () => {
         const docRef = doc(FireStore, "Users_Info", user);
@@ -294,7 +296,7 @@ function FreeBoardDetail() {
     // 진정한 삭제아님 그냥 안보이게만 백업을 못해서...
     const deleteDoc = async() => {
         if( window.confirm("삭제하시겠습니까?") ) {
-            const docRef = doc(FireStore, 'Sunchon', 'Free_board', '1', params.id);
+            const docRef = doc(FireStore, userData.univ, pathname, '1', params.id);
             await updateDoc(docRef, {
                 shown: false
             })
@@ -309,12 +311,11 @@ function FreeBoardDetail() {
             alert('한글자 이상 작성해주세요!')
             return null
         }
-        const docRef = doc(FireStore, 'Sunchon', 'Free_board', '1', params.id);
+        const docRef = doc(FireStore, userData.univ, pathname, '1', params.id);
         const docs = await getDoc(docRef) 
 
         const dat = new Date()
         const currentDate = `${dat.getFullYear()}년 ${dat.getMonth()+1}월 ${dat.getDate()}일 ${dat.getHours()}시 ${dat.getMinutes()}분 ${dat.getSeconds()}초 ${Day[dat.getDay()]} `
-
         updateDoc(docRef, {
             comment: arrayUnion({
                 id: docs.data().comment == undefined ? 1 : docs.data().comment.length + 1,
@@ -331,7 +332,7 @@ function FreeBoardDetail() {
 
     const articleHeartUp = async(id) => {
         if( window.confirm("공감하시겠습니까?") ) {
-            const commmentRef = doc(FireStore, 'Sunchon', 'Free_board', '1', params.id)
+            const commmentRef = doc(FireStore,  userData.univ, pathname, '1', params.id)
             const docRef = await getDoc(commmentRef)
             const heartData = docRef.data().heart
             if( heartData.every( heart => heart != id )) {
@@ -346,25 +347,7 @@ function FreeBoardDetail() {
         }
     }
 
-    const onClickHeartUp = async(id) => {
-        if( window.confirm("공감하시겠습니까?") ) {
-            const commmentRef = doc(FireStore, 'Sunchon', 'Free_board', '1', params.id)
-            const aa = await getDoc(commmentRef)
-            const commentData = aa.data().comment
 
-            if ( commentData[id].heart.every((heart) => heart != user)) {
-                commentData[id].heart.push(user)
-                await updateDoc(commmentRef, {
-                    comment: commentData
-                })
-                alert("공감하였습니다.")
-            }else {
-                alert("이미 공감하였습니다.")
-            }
-
-            
-        }
-    }
 
   return (
       <>
@@ -381,7 +364,7 @@ function FreeBoardDetail() {
           <ContentContainer>
                 <Contents>
                     <MainContentContainer>
-                        <MainTitle to={'/free-board'} >자유게시판</MainTitle>
+                        <MainTitle to={'/free-board'} >{location.state.article.board}</MainTitle>
 
                         {updateToggle 
                         ? 

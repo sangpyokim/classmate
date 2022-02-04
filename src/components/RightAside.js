@@ -2,11 +2,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import SearchInput from '../components/SearchInput'
 import {BiSearch} from 'react-icons/bi'
-import { collection, getDocs, limit, orderBy, query, where } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, limit, orderBy, query, where } from 'firebase/firestore';
 import { FireStore } from '../firebase';
 import { useNavigate } from 'react-router-dom';
 import DDay from './DDay';
 import FirebaseAPI from './FirebaseAPI';
+import { useSelector } from 'react-redux';
 
 const RightAside = styled.div`
     display: flex;
@@ -110,11 +111,14 @@ function RightAsides() {
     const [ popularList, setPopularList ] = useState()
     const navigate = useNavigate()
 
+    const user = useSelector(state => state.user.value)
 
     const isMounted = useRef(false)
-    useEffect(() => {
+    useEffect(async() => {
         isMounted.current = true
-        FirebaseAPI.getTodayPopularList('Sunchon', setPopularList, isMounted)
+        const docRef = doc(FireStore, "Users_Info", user);
+        const docSnap = await getDoc(docRef);
+        FirebaseAPI.getTodayPopularList(docSnap.data().univ, setPopularList, isMounted) 
 
         return () => isMounted.current = false
     }, [])

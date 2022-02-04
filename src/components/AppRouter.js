@@ -18,12 +18,13 @@ import Home from '../routes/Home'
 import Register from '../routes/Register'
 import Search from '../routes/Search'
 import FreeBoard from '../routes/FreeBoard'
-import FreeBoardDetail from '../routes/FreeBoardDetail'
+import BoardDetail from '../routes/BoardDetail'
 import SecretBoard from '../routes/SecretBoard'
 //timetale
 import TimeTable from '../routes/TimeTable'
 import RightAside from './RightAside'
 import styled from 'styled-components'
+import Footer from './Footer'
 
 
 
@@ -68,24 +69,25 @@ function AppRouter() {
                     <Route path="/" element={<Home />} />
                     <Route path="/search" element={<Search />} />
                     <Route path="/free-board" element={<FreeBoard />} />
-                    <Route path='/free-board/:id' element={<FreeBoardDetail />} />
+                    <Route path='/free-board/:id' element={<BoardDetail />} />
                     <Route path="secret-board" element={<SecretBoard />} />
+                    <Route path="secret-board/:id" element={<BoardDetail />} />
                     <Route path='time-table' element={<TimeTable />} />
                     <Route path="*" element={<Navigate to={"/"} />} />
                 </Routes>
                 </>
                 :
                 
+            <>
                 <Routes>
-                <Route path="/" element={<Main />} />
-                <Route path='/signin' element={<SignIn />} />
-                <Route path="/signup" element={<SignUp />} />
-                <Route path="/signup/register" element={<Register />} />
-                <Route path="/forgot" element={<Forgot />} />
-                <Route path="*" element={<Navigate to={"/"} />} />
-
-            </Routes>
-            
+                    <Route path="/" element={<Main />} />
+                    <Route path='/signin' element={<SignIn />} />
+                    <Route path="/signup" element={<SignUp />} />
+                    <Route path="/signup/register" element={<Register />} />
+                    <Route path="/forgot" element={<Forgot />} />
+                    <Route path="*" element={<Navigate to={"/"} />} />
+                </Routes>
+            </>
         }
         </>
     )
