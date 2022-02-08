@@ -8,7 +8,6 @@ import { useDispatch } from 'react-redux'
 import theme from '../components/theme'
 
 
-
 const Container = styled.div`
     display: flex;
     width:100%;
@@ -163,7 +162,6 @@ const List = styled(Link)`
     background-color: white;
     &:hover {
         background-color: #f2f2f2;
-
     }
     &>div:last-child {
         color: ${props => props.theme.color.third};
@@ -176,14 +174,49 @@ const MainSection = styled.div`
     width: 100%;
     height: 542px;
     display: flex;
-        align-items: center;
-        justify-content: center;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
 
     @media ${ props => props.theme.tablet } {
         height: 622px;
+        display: flex;
+        flex-direction: row;
     }
+
     @media ${ props => props.theme.desktop } {
         height: 662px;
+    }
+`
+const MainImage = styled.img`
+    border-radius: 24px;
+    border: 1px solid ${props => props.theme.line};
+    order: 1;
+    width: 175px;
+    margin-top: 28px;
+    @media ${ props => props.theme.tablet } {
+        width: 250px;
+        order:0;
+        margin-top: 0px;
+    }
+`  
+const MainContents = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items:center;
+    justify-content: center;   
+    width: 50%; 
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 28px;
+    & strong {
+        font-weight: 700;
+        color: ${props => props.theme.color.main};
+
+    }
+    @media ${ props => props.theme.tablet } {
+        font-size: 24px;
+        font-weight: 500;
     }
 `
 const ServiceSection = styled.div`
@@ -203,8 +236,8 @@ const CommunitySection = styled.div`
     height: 356px;
     background-color: #F5F5F5;
     display: flex;
-        align-items: center;
-        justify-content: center;
+    align-items: center;
+    justify-content: center;
 
     @media ${ props => props.theme.tablet } {
         height: 491px;
@@ -216,8 +249,9 @@ const CommunitySection = styled.div`
 const Footer = styled.div`
     height: 52px;
     display: flex;
-        align-items: center;
-        justify-content: center;
+    align-items: center;
+    justify-content: center;
+    white-space: pre;
 `
 // 모바일 웹
 const MContainer = styled.div`
@@ -281,7 +315,9 @@ const MLists = styled.div`
     top: 255px;
     z-index: 9;
 `
-const MFooter = styled.div``
+const MFooter = styled.div`
+    white-space: pre;
+`
 
 function Main() {
     const [ mobileToggle, setMobileToggle ] = useState(false);
@@ -322,7 +358,7 @@ function Main() {
                         </List>
                     ))}
                 </MLists>
-                <MFooter></MFooter>
+                <MFooter>mark.k   © Classmate</MFooter>
             </MContainer>
         )
     }
@@ -374,12 +410,23 @@ function Main() {
                 </Lists>
             </Aside>
 
-            <MainSection>
-                main
+            <MainSection >
+                <MainImage width={'250px'} src='https://firebasestorage.googleapis.com/v0/b/classmate-e.appspot.com/o/IMG_CEC49E88B312-1.jpeg?alt=media&token=cd22f629-da92-46eb-9c34-a4cfb7218150'  />
+
+                <MainContents>
+                    <div>
+                        <div>
+                            대학생활을 더 편하고 즐겁게,<br />
+                            <strong>
+                                Classmate
+                            </strong>
+                        </div>
+                    </div>
+                </MainContents>
             </MainSection>
             <ServiceSection>service</ServiceSection>
             <CommunitySection>community</CommunitySection>
-            <Footer>footer</Footer>
+            <Footer>mark.k   © Classmate</Footer>
         </Container>
     )
 }

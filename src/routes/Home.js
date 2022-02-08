@@ -15,7 +15,7 @@ import RightAsides from '../components/RightAside'
 
 const Container = styled.div`
     width: 100%;
-    height: 100vh;
+    height: 100vh; 
 `
 const SubMenuContainer = styled.div`
     display: flex;
@@ -67,9 +67,10 @@ const Avatar = styled.div`
 `
 const UserImgContainer = styled.div``
 const UserImg = styled.img`
-    width: 58px;
+    width: 60px;
+    height: 60px;
     border-radius: 8px;
-    margin-bottom: 12px;
+    margin: 12px 0;
 `
 const Nickname = styled.div`
     font-size: 18px;
@@ -104,6 +105,7 @@ const AvatarButton = styled.div`
     }
     &>div:hover {
         cursor: pointer;
+        background-color: white;
     }
     &>div:first-child {
         margin-right: 4px;
@@ -128,6 +130,7 @@ const Card = styled.div`
     }
     &>div:hover {
         cursor: pointer;
+        background-color: white;
     }
     &>div:last-child {
         border: none;
@@ -273,13 +276,12 @@ function Home() {
     const user = useSelector( state => state.user.value)
 
     
-
     const isMounted = useRef(false)
 
     useEffect(() => {
         isMounted.current = true
-        FirebaseAPI.getUserInfo(user, setUserData)
-        if (FirebaseAPI.readDocuments(user,'free-board', 100, setFreeList, isMounted) && FirebaseAPI.readDocuments(user, 'secret-board', 2, setSecretList, isMounted)) {
+        FirebaseAPI.getUserInfo(user, setUserData) 
+        if (FirebaseAPI.readDocuments(user,'free-board', 4, setFreeList, isMounted) && FirebaseAPI.readDocuments(user, 'secret-board', 2, setSecretList, isMounted)) {
             setLoading(false)
         }
         return () => isMounted.current = false
@@ -307,9 +309,9 @@ function Home() {
                     <Contents>
                         <LeftAside>
                             <Avatar>
-                                    <UserImgContainer>
-                                        {userdata.image == null ? <UserImg src="https://firebasestorage.googleapis.com/v0/b/classmate-e.appspot.com/o/default_image.png?alt=media&token=c2ca3608-9fea-4021-82f7-bb5640bbbba9" /> : <UserImg src={userdata.image} width={'20px'} />}
-                                    </UserImgContainer>
+                                <UserImgContainer>
+                                    {userdata && userdata.image == null ? <UserImg height={60} width={60} src="https://firebasestorage.googleapis.com/v0/b/classmate-e.appspot.com/o/default_image.png?alt=media&token=c2ca3608-9fea-4021-82f7-bb5640bbbba9" /> : <UserImg height={60} width={60} src={userdata.image} />}
+                                </UserImgContainer>
                                 <Nickname>
                                     {userdata.nickname}
                                 </Nickname>
@@ -320,7 +322,7 @@ function Home() {
                                     {userdata.id}
                                 </Ident>
                                 <AvatarButton>
-                                    <div>
+                                    <div onClick={() => navigate('/my')} >
                                         내정보
                                     </div>
                                     <div onClick={() => logOut()} >
@@ -332,7 +334,7 @@ function Home() {
                             <Card>
                                 <div>내가 쓴 글</div>
                                 <div>댓글 단 글</div>
-                                <div>즐겨찾기</div>
+                                <div onClick={() => navigate('/chat')} >쪽지함</div>
                             </Card>
                         </LeftAside>
 

@@ -87,11 +87,14 @@ const Account = styled.div`
     &>a:last-child{
         margin-left: 12px;
     }
+    &>a:hover {
+        cursor: pointer;
+    }
 `
 
 function Header() {
     const location = useLocation()
-
+    const navigate = useNavigate()
 
   return (
     <Container>
@@ -123,8 +126,8 @@ function Header() {
             </Menu>
 
             <Account >
-                <a  >쪽지함</a>
-                <a  >내 정보</a>
+                <a  onClick={() => navigate('/chat')} >쪽지함</a>
+                <a onClick={() => navigate('/my')} >내 정보</a>
             </Account>
         </div>
     </Container>

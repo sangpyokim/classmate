@@ -5,12 +5,14 @@ import emailjs from 'emailjs-com'
 import { collection, doc, getDoc, getDocs, limit, orderBy, query, setDoc, where } from "firebase/firestore";
 import { Auth, FireStore } from '../firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
+import EmailjsAPI from '../components/EmailjsAPI';
 
 
 
 const Container = styled.div`
     display: flex;
-    justify-content:center;
+    justify-content: center;
+    height: auto;
     padding: 25px 0;
     @media (max-width: 480px) {
         padding: 0px;
@@ -157,10 +159,13 @@ const Email = styled.input`
     border:1px solid ${props => props.theme.line};
     font-size: 16px;
     color: ${props => props.theme.color.second};
+    border-color: ${props => props.error === "" ? null : props.theme.color.blue };
     &:focus {
-        border-color: ${props => props.error == "" ? 'white' : props.theme.color.blue };
+        background-color: white;
     }
 `
+const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
 
 function SignUp() {
     const [ email, setEmail ] = useState("") //not null
@@ -180,7 +185,6 @@ function SignUp() {
 
     useEffect(() => {
         emailjs.init("user_E56KkBDqZ7Oo5pkWObK87")
-
     },[])
 
     useEffect(() => {
@@ -188,33 +192,25 @@ function SignUp() {
         if( password1 != password2 ) {
             setError("비밀번호를 확인해주세요!")
         }
-        console.log(password2)
     }, [password2])
 
     const verifyEmail = async(e) => {
         e.preventDefault();
         setError('')
         //이메일 유효성검사
-
+        if ( email == '' || !re.test(email)) {
+            return setError("이메일을 확인해주세요!")
+        }
         // 중복검사
         const docRef = await getDocs(collection(FireStore, "Users_Info"))
         const list = []
         docRef.forEach( doc => list.push(doc.data().id))
         if ( list.some(list => list === email) ) {
-            setError("중복된 이메일입니다!")
+            return setError("중복된 이메일입니다!")
         }else {
             setEmailToggle(true)
-            sendEmail() // 이메일 인증
+            EmailjsAPI.sendEmail(code, email)
         }
-    }
-
-    const sendEmail = () => {
-        // 이메일 보내기
-        emailjs.send('service_0ixp08n', 'template_uuuhpxd', {
-            verify_code: code,
-            email
-       })
-
     }
     
     const checkCode = (e) => {
@@ -229,23 +225,22 @@ function SignUp() {
 
 
     const onSubmit = async() => {
-        setError("")
         if( name === '' ) {
             setError("이름을 입력해주세요!")
         }else if ( nickname === '' ) {
             setError("닉네임을 입력해주세요!")
-        }else {
+        }else if(error === '') {
             createUserWithEmailAndPassword(Auth, email, password1)
                 .then( async(uid) => {
                     await setDoc(doc(FireStore, 'Users_Info', uid.user.uid), {
                         id: email,
+                        password: password1,
                         name,
                         nickname,
                         studentId: location.state.studentID,
                         univ: location.state.selectedUniv
                     })
-                }).then(res => console.log(res))
-
+                }).then(res => alert("회원가입이 완료되었습니다."))
         }
     }
 
@@ -259,7 +254,7 @@ function SignUp() {
                 <InputContainers  >
                     <div ><label>이메일</label></div>
                     <div>
-                        <Email type={'text'} value={email} readOnly={emailToggle ? true : false} onChange={e => setEmail(e.target.value)} onClick={() => setEmail("")} error />
+                        <Email type={'email'} value={email} autoFocus readOnly={emailToggle ? true : false} onChange={e => setEmail(e.target.value)} onClick={() => setEmail("")} error={email} />
                         <input type={'button'} value={"이메일 인증"} onClick={(e) => verifyEmail(e)} disabled={emailToggle ? true : false } />
                     </div>
                     
@@ -269,7 +264,7 @@ function SignUp() {
                 <VerufyInput  >
                     <div ><label>인증번호 (4자리)</label></div>
                     <div>
-                        <input value={verifyCode} maxLength={4} readOnly={passwordToggle ? true : false} onChange={e => setVerifyCode(e.target.value)} onClick={() => setVerifyCode("")} />
+                        <input value={verifyCode} autoFocus maxLength={4} readOnly={passwordToggle ? true : false} onChange={e => setVerifyCode(e.target.value)} onClick={() => setVerifyCode("")} />
                         <input type={'button'} value={"확인"} onClick={(e) => checkCode(e)} disabled={passwordToggle ? true : false } />
                     </div>
                 </VerufyInput>

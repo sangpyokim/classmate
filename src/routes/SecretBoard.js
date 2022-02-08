@@ -249,7 +249,7 @@ function FreeBoard() {
                         ))
                     }
                     <div >
-                        <Pagination pagination={pagination} setPagination={setPagination} article={article.length-1} setArticle={setArticle} searchBoard={"Free_board"} setLoading={setLoading} />
+                        <Pagination uid={user} pagination={pagination} setPagination={setPagination} article={article === false ? 0 : article.length-1} setArticle={setArticle} searchBoard={"secret-board"} setLoading={setLoading} />
                     </div>
                 </MainContentContainer>
 

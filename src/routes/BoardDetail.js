@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import RightAsides from '../components/RightAside';
@@ -6,11 +6,12 @@ import SubMenu from '../components/SubMenu';
 import Timer from '../components/Timer';
 import Loader from '../components/Loader';
 import { FireStore } from '../firebase'
-import { arrayUnion, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { arrayUnion, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import Footer from '../components/Footer'
 import Writting from '../components/Writting';
 import { useSelector } from 'react-redux';
 import Comments from '../components/Comments';
+import FirebaseAPI from '../components/FirebaseAPI';
 
 
 const Container = styled.div`
@@ -251,8 +252,58 @@ const ArticleImage = styled.div`
         font-weight: 600;
     }
 `
+const Modal = styled.div`
+    position: fixed;
+    left: 0;
+    top: 0;
+    display: flex;
+    align-items:center;
+    justify-content:center;
+    width: 100%;
+    height: 100vh;
+    background-color: rgba(25, 25, 25, 0.6);
+    z-index: 10;
 
 
+`
+const ChatWrapper = styled.div`
+    position: fixed;
+    left: 50%;
+    top: 50%;    
+    transform: translate(-50%, -50%);
+    display: flex;
+    justify-content:center;
+    align-items: flex-end;
+    flex-direction: column;
+    padding: 24px;
+    width: 350px;
+    height: 200px;
+    background-color: white;
+    z-index: 11;
+`
+const ChatTitle = styled.div`
+    display: flex;
+    justify-content:space-between;
+    width: 100%;
+    font-size: 20px;
+`
+const TextArea = styled.textarea`
+    resize: none;
+    height: 200px;
+    width: 100%;
+    border: 1px solid ${props => props.theme.line};
+    margin-top: 12px;
+    margin-bottom: 12px;
+    padding: 4px;
+`
+const ChatButton = styled.div`
+    text-align: center;
+    line-height: 24px;
+    width: 50px;
+    background-color: ${props => props.theme.color.main};
+    border-radius: 8px;
+    color: white;
+`
 
 const Day = ['일요일', "월요일", "화요일", "수요일", '목요일', '금요일', '토요일' ]
 
@@ -268,6 +319,8 @@ function FreeBoardDetail() {
     const [ updateToggle, setUpdateToggle ] = useState(false);
     const [ userData, setUserData] = useState()
     const [ comment, setComment ] = useState('')
+    const [ chatToggle, setChatToggle ] = useState(false)
+    const [ chat, setChat ] = useState('')
 
 
     const getUserInfo = async () => {
@@ -290,6 +343,10 @@ function FreeBoardDetail() {
             getUserInfo()
             setLoading(false)
         }
+        return () => {
+
+            window.addEventListener('click', setChatToggle(false))
+        }
 
     }, [location])
 
@@ -301,7 +358,7 @@ function FreeBoardDetail() {
                 shown: false
             })
             alert("삭제되었습니다.")
-            navigate('/free-board')
+            navigate('/')
         }
     }
     
@@ -384,13 +441,15 @@ function FreeBoardDetail() {
                             <MainContentsUser>
                                 <UserWrapper>
                                     <UserImgContainer>
-                                        {userData && userData.image == null ? <UserImg src="https://firebasestorage.googleapis.com/v0/b/classmate-e.appspot.com/o/default_image.png?alt=media&token=c2ca3608-9fea-4021-82f7-bb5640bbbba9" /> : <UserImg src={article.image} width={'20px'} />}
+                                        {article.anonymous 
+                                        ? <UserImg src="https://firebasestorage.googleapis.com/v0/b/classmate-e.appspot.com/o/default_image.png?alt=media&token=c2ca3608-9fea-4021-82f7-bb5640bbbba9" /> 
+                                        : article && article.user.image == undefined ? <UserImg src="https://firebasestorage.googleapis.com/v0/b/classmate-e.appspot.com/o/default_image.png?alt=media&token=c2ca3608-9fea-4021-82f7-bb5640bbbba9" /> : <UserImg src={article && article.user.image} width={'20px'} height={'20px'} />}
 
                                     </UserImgContainer>
 
                                     <ContentsInfo>
                                         <div>
-                                            익명
+                                            {article.anonymous ? '익명' : article.user.nickname}
                                         </div>
                                         <Timer time={article && article.date} />
                                     </ContentsInfo>
@@ -401,9 +460,28 @@ function FreeBoardDetail() {
                                         <div onClick={() => setUpdateToggle(true)} >수정</div>
                                         <div onClick={() => deleteDoc()} >삭제</div>
                                     </>
-                                    : null}
+                                    : <div  onClick={() => setChatToggle(true)} >쪽지</div>}
                                 </UpdateDeleteWrapper>
                             </MainContentsUser>
+
+
+                            {
+                                chatToggle ? 
+                                <>
+                                <Modal onClick={() => setChatToggle(false)} />
+
+                                    <ChatWrapper>
+                                            <ChatTitle>
+                                                <div>쪽지 보내기</div>
+                                                <div onClick={() => setChatToggle(false)} >X</div>
+                                            </ChatTitle>
+                                            <TextArea onChange={e => setChat(e.target.value)} value={chat} ></TextArea>
+                                            <ChatButton onClick={() => FirebaseAPI.sendChat(chat, user, article.uid, setChat, setChatToggle)} >전송</ChatButton>
+                                    </ChatWrapper>
+                                </>
+                                : null
+                            }
+
 
                             <MainContents>
                                 <MainContentsTitle>

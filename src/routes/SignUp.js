@@ -5,7 +5,8 @@ import { UnivList } from '../components/UnivList'
 
 const Container = styled.div`
     display: flex;
-    justify-content:center;
+    justify-content: center;
+    height: auto;
     padding: 25px 0;
     @media (max-width: 480px) {
         padding: 0px;

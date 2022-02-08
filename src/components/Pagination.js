@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import {BiSearch} from 'react-icons/bi'
 import SearchInput from './SearchInput';
-import { collection, endAt, getDocs, limit, orderBy, query, startAt, where } from 'firebase/firestore';
+import { collection, doc, endAt, getDoc, getDocs, limit, orderBy, query, startAt, where } from 'firebase/firestore';
 import { FireStore } from '../firebase';
 
 
@@ -61,8 +61,8 @@ const FormInputIcon = styled(BiSearch)`
     color: ${props => props.theme.color.third};
     z-index: 8;
 `
-// 현재 페이지, 페이지 변경 setstate 함수, 가지고있는 페이지리스트의 최대 페이지 수, 페이지리스트 변경 함수, 검색할 게시판, 로딩변경함수
-function Pagination({pagination, setPagination, article, setArticle, searchBoard, setLoading}) {
+// 대학이름, 현재 페이지, 페이지 변경 setstate 함수, 가지고있는 페이지리스트의 최대 페이지 수, 페이지리스트 변경 함수, 검색할 게시판, 로딩변경함수
+function Pagination({uid, pagination, setPagination, article, setArticle, searchBoard, setLoading }) {
   const [ searchText, setSearchText ] = useState("")
 
   const getDocuments = async(e) => {
@@ -71,7 +71,10 @@ function Pagination({pagination, setPagination, article, setArticle, searchBoard
       alert('2글자 이상 적어주세요.')
       return null
     }
-    const docRef = collection(FireStore, "Sunchon", `${searchBoard}`, '1')
+    const userRef = doc(FireStore, 'Users_Info', uid)
+    const docSnap = await getDoc(userRef);
+    console.log(docSnap.data())
+    const docRef = collection(FireStore, docSnap.data().univ, `${searchBoard}`, '1')
     const q = query(docRef, where('shown', '==', true), orderBy('id', 'desc'), limit(1000))
     const querySnapshot = await getDocs(q);
     const list1 = []

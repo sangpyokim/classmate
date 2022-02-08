@@ -25,6 +25,12 @@ import TimeTable from '../routes/TimeTable'
 import RightAside from './RightAside'
 import styled from 'styled-components'
 import Footer from './Footer'
+import My from '../routes/My'
+import Email from '../routes/Email'
+import Password from '../routes/Password'
+import ProfileChange from '../routes/ProfileChange'
+import Nickname from '../routes/Nickname'
+import Chatting from '../routes/Chatting'
 
 
 
@@ -70,9 +76,15 @@ function AppRouter() {
                     <Route path="/search" element={<Search />} />
                     <Route path="/free-board" element={<FreeBoard />} />
                     <Route path='/free-board/:id' element={<BoardDetail />} />
-                    <Route path="secret-board" element={<SecretBoard />} />
-                    <Route path="secret-board/:id" element={<BoardDetail />} />
-                    <Route path='time-table' element={<TimeTable />} />
+                    <Route path="/secret-board" element={<SecretBoard />} />
+                    <Route path="/secret-board/:id" element={<BoardDetail />} />
+                    <Route path='/time-table' element={<TimeTable />} />
+                    <Route path='my' element={<My />} />
+                    <Route path='/my/email' element={<Email />} />
+                    <Route path='/my/password' element={<Password />} />
+                    <Route path='/my/profile' element={<ProfileChange />} />
+                    <Route path="/my/nickname" element={<Nickname />} />
+                    <Route path='chat' element={<Chatting />} />
                     <Route path="*" element={<Navigate to={"/"} />} />
                 </Routes>
                 </>

@@ -55,6 +55,28 @@ const RightCard = styled.div`
         background-color: whitesmoke;
     }
 `
+const Card = styled.div`
+    border: 1px solid ${props => props.theme.line};
+    width: 100%;
+    font-weight: 500;
+    background-color: whitesmoke;
+    display: flex;
+    align-items:center;
+    justify-content: space-between;
+    height: 40px;
+    padding: 8px;
+    color: ${props => props.theme.color.blue};
+    font-weight: 700;
+    margin-bottom: 4px;
+    &:hover {
+        cursor: pointer;
+    }
+    &>div:last-child {
+        font-size: 12px;
+        color: ${props =>props.theme.color.third};
+        font-weight: 400;
+    }
+`
 const PopulstListContainer = styled.div`
     display: flex;
     align-items: flex-start;
@@ -164,15 +186,15 @@ function RightAsides() {
         ))}
     </RightCard>
 
-    <RightCard>
+    <Card>
         <div>HOT 게시물</div>
-        <div>실시간 인기 글1</div>
-        <div>실시간 인기 글2</div>
-    </RightCard>
+        <div>더보기</div>
+    </Card>
 
-    <RightCard>
+    <Card>
         <div>BEST 게시판</div>
-    </RightCard>
+        <div>더보기</div>
+    </Card>
 </RightAside>
   )
 }

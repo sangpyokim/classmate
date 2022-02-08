@@ -50,7 +50,10 @@ const WritingContainer = styled.form`
         }
     }
 `
-
+const Label = styled.label`
+    font-size: 12px;
+    padding-right: 12px;
+`
 const Textarea = styled.textarea`
     resize: none;
     border: none;
@@ -74,6 +77,7 @@ function Writting({ type, board, boardName}) {
     const [ title, setTitle ] = useState('')
     const [ contents, setContents ] = useState('')
     const [ userdata, setUserData] = useState()
+    const [ anonymous, setAnonymous ] = useState(false);
     const [ files, setFiles ] = useState({
         detailImageFile: null,
         detailImageUrl: null,
@@ -81,19 +85,8 @@ function Writting({ type, board, boardName}) {
 
     let navigate = useNavigate()
     const params = useParams()
-    //유저 정보가져오기
 
     const user = useSelector( state => state.user.value)
-    const getUserInfo = async () => {
-        const docRef = doc(FireStore, "Users_Info", user);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-            setUserData(docSnap.data());
-          } else {
-            // doc.data() will be undefined in this case
-            alert("잘못된 접근!");
-          }
-    }
 
     useEffect(() => {
         FirebaseAPI.getUserInfo(user, setUserData)
@@ -127,11 +120,13 @@ function Writting({ type, board, boardName}) {
             image: imageUrl,
             shown: true,
             heart:[],
-            board: boardName
+            board: boardName,
+            anonymous
          }) : updateDoc(docRef, {
             title,
             contents,
             image: imageUrl,
+            anonymous
          })
         console.log("게시글 등록완료, 100%")
         navigate('/')
@@ -150,10 +145,10 @@ function Writting({ type, board, boardName}) {
     }
     //삭제 후 재등록!
     const updateStorage = async(id) => {
+        // 문서에 image check
         if(files.detailImageFile === null) {
             return setDocuments()
         }
-        // 문서에 image check
         const docRef = doc(FireStore, userdata.univ, board, '1', `${id}`)
         const docSnap = await getDoc(docRef);
         if(docSnap.data().image === null) {
@@ -168,6 +163,7 @@ function Writting({ type, board, boardName}) {
         }).catch(e => alert("a"))
 
     }
+    
     const getImageUrl = async(file, id) => {
         console.log("이미지 주소 불러오기 시작, 50%")
         const url = await getDownloadURL(ref( Storage, `${userdata.univ}/${board}/${id}/${user}-${id}`))
@@ -189,7 +185,6 @@ function Writting({ type, board, boardName}) {
         window.confirm("글을 게시하겠습니까?")
         && type === 'create' ? await setStorage(files.detailImageFile, docs.size+1) : await updateStorage(params.id)
     }
-
 
 
   return (
@@ -219,6 +214,10 @@ function Writting({ type, board, boardName}) {
                 }}
                 type="file" id='file' accept="image/png, image/jpeg" multiple />
             <div>
+                <Label htmlFor='익명' >
+                    <input type={'checkbox'} id='익명' value={anonymous} onClick={(e) => setAnonymous(prev => !prev)} />
+                    익명
+                </Label>
                 <input type={"submit"} value="작성" />
             </div>
         </div>

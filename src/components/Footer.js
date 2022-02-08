@@ -11,6 +11,7 @@ const Conatiner = styled.div`
   position: relative;
   color: ${props => props.theme.color.third};
   white-space: pre;
+  z-index:8;
 `
 
 function Footer() {
